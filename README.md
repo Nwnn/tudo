@@ -12,6 +12,10 @@ abstract
 ## Requirement
 
 ## Usage
+デバッグ
+```
+npm run dev
+```
 
 ## Install
 
