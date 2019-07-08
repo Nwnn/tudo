@@ -14,6 +14,7 @@ api.get('/', (req, res) => {
         time : new Date(),
         dueTime : new Date(),
         icon : '',
+        isComplete : false
 
     },
 
@@ -23,6 +24,7 @@ api.get('/', (req, res) => {
         time : new Date(),
         dueTime : new Date(),
         icon : '',
+        isComplete : false
 
     },
 

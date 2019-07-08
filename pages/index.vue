@@ -3,10 +3,10 @@
     <div class="row mt-2">
       <div class="col-md-12">
         <b-card no-body class="text-center mb-2" v-for="task in tasks" :key="task.id">
-          <b-card-header>
+          <b-card-header v-if="!task.isComplete">
               <div class="row">
 
-                <b-form-checkbox value="orange"></b-form-checkbox>
+                <b-form-checkbox v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
 
                 <div class="col-10 task-display">
 
@@ -47,22 +47,27 @@ div.task-display {
 
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
-import axios from 'axios';
+import Vue from 'vue';
+import axios from '@nuxtjs/axios';
 
-@Component
-export default class Home extends Vue {
-  async asyncData() {
-    let { data } = await axios.get('http://localhost/api');
+export default Vue.extend({
+    async asyncData(context) {
+    let { data } = await context.$axios('http://localhost/api');
 
     return {
       tasks : data
 
     };
 
+  },
+
+  methods : {
+    onTaskCheckChange(task) {
+      console.log(task);
+      task.isComplete = true;
+
+    }
   }
-
-}
-
+})
 </script>
 
