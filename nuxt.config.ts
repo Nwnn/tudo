@@ -19,7 +19,14 @@ const config: NuxtConfiguration = {
   
   },
 
-  modules : ['bootstrap-vue/nuxt']
+  modules : [
+    'bootstrap-vue/nuxt',
+    '@nuxtjs/axios'
+  ],
+
+  axios: { }
+
+
   
 }
 

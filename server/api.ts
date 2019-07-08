@@ -6,10 +6,26 @@ api.use(bodyParser.json());
 
 
 api.get('/', (req, res) => {
-    res.send({
-        name : "作業",
+    res.send([
+        
+    {
+        id : 0,
+        name : "作業A",
         time : new Date(),
+        dueTime : new Date(),
+        icon : '',
 
-    });
+    },
+
+    {
+        id : 1,
+        name : "作業B",
+        time : new Date(),
+        dueTime : new Date(),
+        icon : '',
+
+    },
+
+    ]);
 
 });
