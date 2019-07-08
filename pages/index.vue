@@ -6,6 +6,7 @@
           <b-card-header v-if="!task.isComplete">
               <div class="row">
 
+
                 <b-form-checkbox v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
 
                 <div class="col-10 task-display">
