@@ -1,34 +1,13 @@
 import express, { Router } from 'express';
 import bodyParser, { json } from 'body-parser';
+import { Task, User } from './interface';
 
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
 
-
-// Taskインターフェース
-interface Task{
-    taskid: number;
-    name : string;
-    startTime : Date;
-    dueTime : Date;
-    icon : string;
-    description : string;
-    status : boolean;
-    createTime : Date;
-    updateTime : Date | undefined;
-
-}
-
-// タスクのリスト
-interface TaskList{
-    userid: number,
-    name: string;
-    tasks: Task[];
-}
-
-// update interface
-interface updateTask {
+// recieve update message interface
+interface UpdateTaskMessage {
     name: string|undefined,
     startTime: Date|undefined,
     dueTime: Date|undefined,
@@ -37,10 +16,7 @@ interface updateTask {
     status: boolean|undefined,
 }
 
-
-
-
-const employees:Array<TaskList>  = [
+const employees:Array<User>  = [
     {
         userid : 1,
         name : "たかし",
@@ -99,9 +75,9 @@ const employees:Array<TaskList>  = [
     }
 ]
 abstract class TaskController{
-    abstract getDataFromDatebase(taskList: Array<TaskList>):any;
+    abstract getDataFromDatebase(taskList: Array<User>):any;
     abstract check(task: Task):void;
-    abstract update(updatetask: updateTask):void;
+    abstract update(updatetask: UpdateTaskMessage):void;
     abstract add(userid: number, task: Task):void;
     // abstract delete(taskid: string):void;
     // abstract getTask(name: string): TaskList;
@@ -110,7 +86,7 @@ abstract class TaskController{
 
 // 実装
 class TaskControllerImplementation extends TaskController {
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
+    public getDataFromDatebase(taskList: Array<User>): Array<User> {
         return employees;
     }
 
@@ -119,7 +95,7 @@ class TaskControllerImplementation extends TaskController {
         task.updateTime = new Date();
     }
 
-    public update(updatetask: updateTask):void {
+    public update(updatetask: UpdateTaskMessage):void {
 
     }
     public add(userid: number,task: Task): void {
@@ -142,7 +118,7 @@ class TodoListApp {
         this.taskController = taskController;
     }
     
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
+    public getDataFromDatebase(taskList: Array<User>): Array<User> {
         const task = taskList;
         return task;
     }
@@ -151,11 +127,11 @@ class TodoListApp {
         this.taskController.check(task);
     }
 
-    public update(updatetask: updateTask): void {
+    public update(updatetask: UpdateTaskMessage): void {
         this.update(updatetask);
     }
 
-    public getTask(userid: number): TaskList{
+    public getTask(userid: number): User{
         return employees.filter(employee => employee.userid === userid)[0];
     }
     public add(userid: number, task: Task) :void{
@@ -173,7 +149,7 @@ api.get('/task', (req, res) => {
     const todoapp = new TodoListApp(new TaskControllerImplementation());
     const list = todoapp.getDataFromDatebase(employees);
 
-    const todo: TaskList = JSON.parse(JSON.stringify(list));
+    const todo: User = JSON.parse(JSON.stringify(list));
 
     res.send(todo);
 });
@@ -182,11 +158,11 @@ api.get('/task', (req, res) => {
 // ユーザごとのタスク取得
 api.get('/task/:userid',(req, res)=>{
     const todoapp = new TodoListApp(new TaskControllerImplementation());
-    const userid: number=Number(req.params.userid);
+    const userid: number = Number(req.params.userid);
     // console.log(id);
     const task = todoapp.getTask(userid);
     // console.log(task);
-    const todo: TaskList = JSON.parse(JSON.stringify(task));
+    const todo: User = JSON.parse(JSON.stringify(task));
 
     res.send(todo);
 });
@@ -261,10 +237,10 @@ api.put('/check',(req, res)=> {
 api.put('/update/:userid/',(req, res)=> {
     const userid: number = Number(req.params.userid);
     const taskid: number = Number(req.body.taskid);
-    const addtask:updateTask = req.body.updatetask;
+    const addtask:UpdateTaskMessage = req.body.updatetask;
     const todoapp = new TodoListApp(new TaskControllerImplementation());
 
-    const updatetask: updateTask = {
+    const updatetask: UpdateTaskMessage = {
             name:"更新",
             startTime:new Date(),
             dueTime:new Date(),
