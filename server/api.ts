@@ -6,6 +6,7 @@ api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
 
 
+<<<<<<< HEAD
 // Taskインターフェース
 interface Task{
     taskid: number;
@@ -17,6 +18,19 @@ interface Task{
     status : boolean;
     createTime : Date;
     updateTime : Date | undefined;
+=======
+
+api.get('/', (req, res) => {
+    res.send([
+        
+    {
+        id : 0,
+        name : "作業A",
+        time : new Date(),
+        dueTime : new Date(),
+        icon : '',
+        isComplete : false
+>>>>>>> 741d1c1bd39bf762343b3ec58d94aef910881855
 
 }
 
