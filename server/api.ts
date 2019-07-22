@@ -1,105 +1,68 @@
 import express, { Router } from 'express';
 import bodyParser, { json } from 'body-parser';
+import {User,Task, updateTask } from './interface';
+import moment from 'moment';
+
 
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
 
 
-// Taskインターフェース
-interface Task{
-    taskid: number;
-    name : string;
-    startTime : Date;
-    dueTime : Date;
-    icon : string;
-    description : string;
-    status : boolean;
-    createTime : Date;
-    updateTime : Date | undefined;
-
-}
-
-// タスクのリスト
-interface TaskList{
-    userid: number,
-    name: string;
-    tasks: Task[];
-}
-
-// update interface
-interface updateTask {
-    name: string|undefined,
-    startTime: Date|undefined,
-    dueTime: Date|undefined,
-    icon: string|undefined,
-    description: string|undefined,
-    status: boolean|undefined,
-}
-
-
-
-
-const employees:Array<TaskList>  = [
+const employees:Array<User>  = [
     {
-        userid : 1,
         name : "たかし",
         tasks : [
             {
-                taskid : 1,
                 name : "仕事",
-                startTime : new Date(),
-                dueTime : new Date(),
+                startTime : moment(),
+                dueTime : moment(),
                 icon : "",
                 description : "",
                 status : false,
-                createTime : new Date(),
+                createTime : moment(),
                 updateTime : undefined,
             },
             {
-                taskid : 2,
                 name : "家事",
-                startTime : new Date(),
-                dueTime : new Date(),
+                startTime : moment(),
+                dueTime : moment(),
                 icon : "",
                 description : "",
                 status : true,
-                createTime : new Date(),
+                createTime : moment(),
                 updateTime : undefined,
             }
         ]
     },
     {
-        userid: 2,
         name : "ひろし",
         tasks : [
             {
-                taskid : 1,
                 name : "仕事",
-                startTime : new Date(),
-                dueTime : new Date(),
+                startTime : moment(),
+                dueTime : moment(),
                 icon : "",
                 description : "",
                 status : false,
-                createTime : new Date(),
+                createTime : moment(),
                 updateTime : undefined,
             },
             {
-                taskid : 2,
                 name : "運転",
-                startTime : new Date(),
-                dueTime : new Date(),
+                startTime : moment(),
+                dueTime : moment(),
                 icon : "",
                 description : "",
                 status : true,
-                createTime : new Date(),
+                createTime :  moment(),
                 updateTime : undefined,
             }
         ]
     }
 ]
 abstract class TaskController{
-    abstract getDataFromDatebase(taskList: Array<TaskList>):any;
+    abstract getDataFromDatebase(taskList: Array<User>):any;
     abstract check(task: Task):void;
     abstract update(updatetask: updateTask):void;
     abstract add(userid: number, task: Task):void;
@@ -110,13 +73,13 @@ abstract class TaskController{
 
 // 実装
 class TaskControllerImplementation extends TaskController {
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
+    public getDataFromDatebase(taskList: Array<User>): Array<User> {
         return employees;
     }
 
     public check(task: Task): void {
         task.status = true;
-        task.updateTime = new Date();
+        task.updateTime = moment();
     }
 
     public update(updatetask: updateTask):void {
@@ -124,7 +87,7 @@ class TaskControllerImplementation extends TaskController {
     }
     public add(userid: number,task: Task): void {
         employees.forEach(employee => {
-            if(employee.userid === userid){
+            if(employee.userid === userid){ //修正する
                 employee.tasks.push(task)
             }
         });
@@ -142,7 +105,7 @@ class TodoListApp {
         this.taskController = taskController;
     }
     
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
+    public getDataFromDatebase(taskList: Array<User>): Array<User> {
         const task = taskList;
         return task;
     }
@@ -155,8 +118,8 @@ class TodoListApp {
         this.update(updatetask);
     }
 
-    public getTask(userid: number): TaskList{
-        return employees.filter(employee => employee.userid === userid)[0];
+    public getTask(userid: number): User{
+        return employees.filter(employee => employee.userid === userid)[0]; //修正
     }
     public add(userid: number, task: Task) :void{
         this.taskController.add(userid, task);
@@ -173,7 +136,7 @@ api.get('/task', (req, res) => {
     const todoapp = new TodoListApp(new TaskControllerImplementation());
     const list = todoapp.getDataFromDatebase(employees);
 
-    const todo: TaskList = JSON.parse(JSON.stringify(list));
+    const todo: User = JSON.parse(JSON.stringify(list));
 
     res.send(todo);
 });
@@ -186,7 +149,7 @@ api.get('/task/:userid',(req, res)=>{
     // console.log(id);
     const task = todoapp.getTask(userid);
     // console.log(task);
-    const todo: TaskList = JSON.parse(JSON.stringify(task));
+    const todo: User = JSON.parse(JSON.stringify(task));
 
     res.send(todo);
 });
@@ -198,14 +161,13 @@ api.post('/task',(req, res) => {
     console.log(userid);
     let num: number = employees[userid -1].tasks.length + 1
     const task:Task = {
-        taskid : num,
         name : "宿題",
-        startTime : new Date(),
-        dueTime : new Date(),
+        startTime : moment(),
+        dueTime : moment(),
         icon : "",
         description : "",
         status : false,
-        createTime : new Date(),
+        createTime : moment(),
         updateTime : undefined
     }
     const todoapp = new TodoListApp(new TaskControllerImplementation());
@@ -244,9 +206,9 @@ api.put('/check',(req, res)=> {
     const taskid: number = Number(req.body.taskid);
     // console.log(typeof id);
     employees.forEach(employee=>{
-        if (employee.userid === userid){
+        if (employee.userid === userid){ //修正
             employee.tasks.forEach(task =>{
-                if(task.taskid === taskid){
+                if(task.taskid === taskid){//修正
                     todoapp.check(task);
                 }
             });
@@ -266,8 +228,8 @@ api.put('/update/:userid/',(req, res)=> {
 
     const updatetask: updateTask = {
             name:"更新",
-            startTime:new Date(),
-            dueTime:new Date(),
+            startTime: moment(),
+            dueTime: moment(),
             icon:undefined,
             description:"",
             status:false,
