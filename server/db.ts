@@ -48,7 +48,7 @@ const userSchema:mongoose.Schema = new mongoose.Schema<UserDocument>({
     // tasks : [mongoose.Schema.Types.ObjectId]
 });
 // Userモデル作成
-const User = mongoose.model<UserDocument>('user',userSchema);
+export const UserModel = mongoose.model<UserDocument>('user',userSchema);
 
 // user
 // const user = new User();
@@ -148,7 +148,7 @@ task.icon = "url";
 
 
 
-class CreateUser {
+class User {
     private userDoc : UserDocument;
     constructor(userDoc : UserDocument){
         // super();
@@ -218,7 +218,7 @@ class UpdateTask {
         this.updateTask = updateTask;
     }
     public async UpdateTask(){
-        const Task = mongoose.model<TaskDocument>('task',taskSchema);
+        // const Task = mongoose.model<TaskDocument>('task',taskSchema);
         Task.findOne({name : this.updateTask.name}).then((resolve) => {
             if(resolve) {
                 const task = new Task(resolve);
