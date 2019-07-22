@@ -1,11 +1,12 @@
 import express, { Router, Request } from 'express';
 import bodyParser, { json } from 'body-parser';
-import {updateTask, UserDocument } from './interface';
+import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { model, Mongoose } from 'mongoose';
-import { UserModel } from './db';
+import { UserModel, TaskModel } from './db';
 import { resolve } from 'path';
 import { isTSAnyKeyword, returnStatement } from '@babel/types';
+import { ObjectID } from 'bson';
 
 
 
@@ -13,51 +14,74 @@ export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
 
-abstract class TaskController{
-    abstract getTask(taskList: Array<User>):any;
-    abstract check(task: Task):void;
-    abstract update(updatetask: updateTask):void;
-    abstract add(userid: number, task: Task):void;
-    // abstract delete(taskid: string):void;
-    // abstract getTask(name: string): TaskList;
-}
-
 class User {
-    constructor(userData: UserDocument){
+    public userDoc:UserDocument;
+    private constructor(userDoc: UserDocument){
+        this.userDoc = userDoc;
     }
     public static async getUserById(userId:number): Promise<User>{
-        const userData = await UserModel.findOne({id: userId});
-        if(userData !== null){
-            const user = new User(userData);
+        const userDoc = await UserModel.findOne({id: userId});
+        if(userDoc !== null){
+            const user = new User(userDoc);
             return user;
         }else {
             throw new Error(`そんな${userId}は存在しません`);
         }
-    }public addTask(task: Task){
-        throw new Error("まだ追加できません");
+    }
+    public createTaskFromRequest(request: Request): void{
+        const task = Task.createTaskFromRequest(request,this);
     }
 
-    public get tasks():  Task[] {
-        return [];
+    public async getTasks():  Promise<Task[]> {
+        const user = (await UserModel.aggregate().lookup(
+            {from:'task',localField:'_id',foreignField:'author',as:'tasks'}
+            ).match({_id:this.userDoc._id}))[0];
+        const tasks:Task[] = user.tasks;
+        return tasks;
     }
-    
 }
 
 class Task {
-    constructor(){
+    public taskDoc:TaskDocument;
+    constructor(taskDoc: TaskDocument){
+        this.taskDoc = taskDoc;
+    }
+    public  static async createTaskFromRequest(request: Request, user:User): Promise<Task>{
+        const taskDoc = new TaskModel();
+        taskDoc.name = request.body.name;
+        taskDoc.startTime = request.body.startTime;
+        taskDoc.icon = request.body.icon;
+        taskDoc.description = request.body.description;
+        taskDoc.dueTime = request.body.dueTime;
+        taskDoc.author = user.userDoc._id
+        
+        const task = new Task(await taskDoc.save());
+        
+        return task;
+    }
+    public changeStatus(status: boolean){
+        this.taskDoc.status = status;
+        this.taskDoc.save();
+    }
+    public switchStatus(): void{
+        this.changeStatus(!this.taskDoc.status);
+    }
 
+    public async update(request:{}): Promise<void>{
+        for (const key in request) {
+            this.taskDoc[key] = request[key];
+        }
+        await this.taskDoc.save()
+    }public static async getTaskById(taskId:number):Promise<Task>{
+       const taskDoc = await TaskModel.findOne({id:taskId});
+       if(taskDoc !== null){
+        const task = new Task(taskDoc);
+        return task;
+    }else {
+        throw new Error(`そんな${taskId}は存在しません`);
     }
-    public static createTaskFromRequest(request: Request): Task{
-        throw new Error("実装してません");
-    }
-    public check(): void{
-        throw new Error("チェック使えないです");
-    }
-    public update(request:{}): void{
-        throw new Error("更新できないです");
     }
 }
-
 
 // アプリ全体の実装
 class TodoListApp {
@@ -70,8 +94,9 @@ class TodoListApp {
         return user;
     }
 
-    public getTask(userid: number): Task{
-        return new Task();
+    public async getTask(taskId: number): Promise<Task>{
+        const task = await Task.getTaskById(taskId);
+        return task;
     }
 
 }
@@ -85,7 +110,7 @@ const todoapp = new TodoListApp();
 api.get('/tasks', async (req, res) => {
     const userId = undefined;
     const user = await todoapp.getUser(userId);
-    res.send(user.tasks);
+    res.send(await user.getTasks());
 });
 
 
@@ -96,8 +121,7 @@ api.post('/task',async(req, res) => {
     const userId = req.body.userId;
     console.log(userId);
     const user = await todoapp.getUser(userId);
-    const task = Task.createTaskFromRequest(req)
-    user.addTask(task);
+    user.createTaskFromRequest(req);
     res.send();
 });
 
@@ -107,7 +131,7 @@ api.get('/user/:userid/task',async(req, res)=>{
     // const userId = undefined;
     const user = await todoapp.getUser(userId);
 
-    res.send(user.tasks);
+    res.send(await user.getTasks());
 });
 
 // チェック
@@ -116,7 +140,7 @@ api.put('/check',async(req, res)=> {
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
     try {
-        task.check();
+        task.switchStatus();
         res.send();
     } catch (error) {
         res.status(400).send(error);
@@ -125,9 +149,9 @@ api.put('/check',async(req, res)=> {
 
 // 更新
 
-api.put('/task/',(req, res)=> {
-    const taskId: number = Number(req.body.taskId);
-    const task = todoapp.getTask(taskId);
+api.put('/task/',async(req, res)=> {
+    const taskId: number = req.body.taskId;
+    const task = await todoapp.getTask(taskId);
     task.update(req.body)
     res.send()
 });

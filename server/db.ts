@@ -63,26 +63,27 @@ const taskSchema:mongoose.Schema = new mongoose.Schema<TaskDocument>({
     description : mongoose.Schema.Types.String ,
     status : {type : mongoose.Schema.Types.Boolean, default : false},
     createTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
-    updateTime : { type : mongoose.Schema.Types.Date},
-    usersId : {type : [mongoose.Schema.Types.ObjectId]}
+    updateTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
+    author : {type: mongoose.Schema.Types.ObjectId},
+    member : {type : [mongoose.Schema.Types.ObjectId],default : undefined}
 });
 
 // updateスキーマ作成
 const updateSchema:mongoose.Schema = new mongoose.Schema<updateTaskDocument>({
     updateTaskId : {type : mongoose.Schema.Types.ObjectId, default : undefined},
     name : {type : String , default : undefined},
-    updateName : {type : String, default : undefined},
+    updateName : {type : String, default : undefined,},
     startTime : {type : Date, default : undefined},
     dueTime : {type : Date, default : undefined},
     icon : {type : String, default : undefined},
     status : {type : Boolean, default : undefined},
     description : {type : String, default : undefined},
-    usersId : {type : mongoose.Types.ObjectId}
+    member : {type : mongoose.Types.ObjectId}
 });
 const UpdateTasks = mongoose.model<updateTaskDocument>('update',updateSchema);
 
 // task
-const Task = mongoose.model<TaskDocument>('task',taskSchema);
+export const TaskModel = mongoose.model<TaskDocument>('task',taskSchema);
 
 const task = new Task();
 task.name = "歯磨き";

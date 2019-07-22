@@ -13,21 +13,11 @@ import * as mongoose from 'mongoose';
     status : boolean;
     createTime : Date;
     updateTime : Date | undefined;
-    usersId : [string]
+    author : string,
+    member : [string]
 }
 // Task schema types
-export interface TaskDocument extends Task, mongoose.Document{
-    name: string;
-    startTime : Date;
-    dueTime : Date;
-    icon :string;
-    description : string;
-    status : boolean;
-    createTime : Date;
-    updateTime : Date | undefined;
-    usersId : [string]
-
-}
+export interface TaskDocument extends Task, mongoose.Document{}
 
 // ユーザのリスト
 export interface User {
@@ -36,33 +26,6 @@ export interface User {
 }
 
 // User schema types
-export interface UserDocument extends User, mongoose.Document{
-    name: string;
-    // tasks:[String];
-}
+export interface UserDocument extends User, mongoose.Document{}
 
 
-// update interface
-export interface updateTask {
-    updateTaskId : string,
-    name: string|undefined,
-    startTime: Date|undefined,
-    dueTime: Date|undefined,
-    icon: string|undefined,
-    description: string|undefined,
-    status: boolean|undefined,
-    userId : string | undefined,
-}
-
-// update types
-export interface updateTaskDocument extends updateTask, mongoose.Document {
-    updateTaskId : string;
-    name : string | undefined;
-    updateName : string | undefined;
-    startTime: Date | undefined;
-    dueTime : Date | undefined;
-    icon : string | undefined;
-    description : string | undefined;
-    status : boolean | undefined;
-    userId : string | undefined;
-}
