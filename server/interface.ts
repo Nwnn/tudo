@@ -22,7 +22,6 @@ export interface TaskDocument extends Task, mongoose.Document{}
 // ユーザのリスト
 export interface User {
     name: string;
-    // tasks: [String] | undefined;
 }
 
 // User schema types

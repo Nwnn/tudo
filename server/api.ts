@@ -1,18 +1,17 @@
-import express, { Router, Request } from 'express';
-import bodyParser, { json } from 'body-parser';
+import { Router, Request } from 'express';
+// import express, { Router, Request } from 'express';
+import {urlencoded, json } from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
-import { model, Mongoose } from 'mongoose';
 import { UserModel, TaskModel } from './db';
-import { resolve } from 'path';
-import { isTSAnyKeyword, returnStatement } from '@babel/types';
-import { ObjectID } from 'bson';
 
 
-
-export const api = express.Router();
-api.use(bodyParser.json());
-api.use(bodyParser.urlencoded({extended: true}));
+// export const api = express.Router();
+// api.use(bodyParser.json());
+// api.use(bodyParser.urlencoded({extended: true}));
+export const api = Router();
+api.use(json());
+api.use(urlencoded({extended: true}));
 
 class User {
     public userDoc:UserDocument;
@@ -54,7 +53,6 @@ class Task {
         taskDoc.description = request.body.description;
         taskDoc.dueTime = request.body.dueTime;
         taskDoc.author = user.userDoc._id
-        
         const task = new Task(await taskDoc.save());
         
         return task;
@@ -116,7 +114,6 @@ api.get('/tasks', async (req, res) => {
 
 
 // タスクの追加
-// { userid : 1 }
 api.post('/task',async(req, res) => {
     const userId = req.body.userId;
     console.log(userId);
@@ -135,7 +132,6 @@ api.get('/user/:userid/task',async(req, res)=>{
 });
 
 // チェック
-// { taskId : 1 }
 api.put('/check',async(req, res)=> {
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
@@ -148,14 +144,9 @@ api.put('/check',async(req, res)=> {
 });
 
 // 更新
-
 api.put('/task/',async(req, res)=> {
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
     task.update(req.body)
     res.send()
 });
-
-
-
-// module.exports = api;
