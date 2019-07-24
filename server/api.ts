@@ -57,6 +57,7 @@ class Task {
         
         return task;
     }
+
     public changeStatus(status: boolean){
         this.taskDoc.status = status;
         this.taskDoc.save();
@@ -83,10 +84,9 @@ class Task {
 
 // アプリ全体の実装
 class TodoListApp {
-
     constructor(){
     }
-    
+  
     public async getUser(userId){
         const user = await User.getUserById(userId);
         return user;
@@ -95,6 +95,7 @@ class TodoListApp {
     public async getTask(taskId: number): Promise<Task>{
         const task = await Task.getTaskById(taskId);
         return task;
+
     }
 
 }
@@ -110,8 +111,6 @@ api.get('/tasks', async (req, res) => {
     const user = await todoapp.getUser(userId);
     res.send(await user.getTasks());
 });
-
-
 
 // タスクの追加
 api.post('/task',async(req, res) => {
@@ -144,9 +143,30 @@ api.put('/check',async(req, res)=> {
 });
 
 // 更新
+
 api.put('/task/',async(req, res)=> {
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
     task.update(req.body)
     res.send()
+
+});
+
+// { taskid : "1",updatetask : updateTask }
+api.put('/update/:userid/',(req, res)=> {
+    const userid: number = Number(req.params.userid);
+    const taskid: number = Number(req.body.taskid);
+    const addtask:UpdateTaskMessage = req.body.updatetask;
+    const todoapp = new TodoListApp(new TaskControllerImplementation());
+
+    const updatetask: UpdateTaskMessage = {
+            name:"更新",
+            startTime:new Date(),
+            dueTime:new Date(),
+            icon:undefined,
+            description:"",
+            status:false,
+        };
+    todoapp.update(updatetask);
+  
 });
