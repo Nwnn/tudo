@@ -131,6 +131,8 @@ api.get('/tasks', async (req, res) => {
 api.post('/singup',async(req, res) => {
     const userName = req.body.userName;
     User.createUserFromRequest(req);
+    res.send();
+    
 })
 
 
