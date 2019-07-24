@@ -1,0 +1,8 @@
+POST http://localhost:80/api/task
+content-type: application/json
+
+{
+    "userId" : 1,
+    "name": "sample2",
+    "icon": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
