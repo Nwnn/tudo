@@ -1,7 +1,7 @@
 import { UserDocument, TaskDocument } from'./interface'
 import mongoose from 'mongoose';
 
-mongoose.connect('mongodb://localhost:27017/todoDatabase',{useNewUrlParser : true});
+mongoose.connect('mongodb://tudo-mongo:27017/todoDatabase',{useNewUrlParser : true});
 
 
 // userスキーマ作成

@@ -24,10 +24,9 @@ nuxtConfig.dev = !(process.env.NODE_ENV === 'production');
 
     app.use(nuxt.render);
 
-    app.listen(port, host, () => {
+    app.listen(port, () => {
         console.log(`Server listening on http://${host}:${port}`);
     
     });
-
 
 })();
