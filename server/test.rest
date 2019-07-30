@@ -1,0 +1,30 @@
+POST http://localhost:80/api/task
+content-type: application/json
+
+{
+    "userId" : 1,
+    "name": "sample2",
+    "icon": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+
+### 
+
+POST http://localhost:80/api/singup
+content-type: application/json
+
+{
+    "userName": "sample2"
+}
+
+### 
+
+POST http://localhost:80/api/task
+content-type: application/json
+
+{
+    "userId" : 1,
+    "name" : "sample task",
+    "icon" : "",
+    "description" : "hogehoge",
+    "dueTime" : "2017-02-01T03:15:45.000Z"
+}

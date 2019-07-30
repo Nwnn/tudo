@@ -10,7 +10,7 @@ const dbName = 'todoDatabase'
 const userCollection = 'user'
 const taskCollection = 'task'
 
-const url: string = 'mongodb://localhost:27017'
+const url: string = 'mongodb://tudo-mongo:27017'
 
 // User schema types
 interface UserDocument extends User, Document{

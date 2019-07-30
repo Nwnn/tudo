@@ -1,17 +1,18 @@
-import { Router, Request } from 'express';
-// import express, { Router, Request } from 'express';
-import {urlencoded, json } from 'body-parser';
+// import { Router, Request } from 'express';
+import express, { Request } from 'express';
+// import {urlencoded, json } from 'body-parser';
+import bodyParser from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { UserModel, TaskModel } from './db';
- 
+
 
 // export const api = express.Router();
 // api.use(bodyParser.json());
 // api.use(bodyParser.urlencoded({extended: true}));
-export const api = Router();
-api.use(json());
-api.use(urlencoded({extended: true}));
+export const api = express.Router();
+api.use(bodyParser.json());
+api.use(bodyParser.urlencoded({extended: true}));
 
 class User {
     public userDoc:UserDocument;
@@ -19,7 +20,7 @@ class User {
         this.userDoc = userDoc;
     }
     public static async getUserById(userId:number): Promise<User>{
-        const userDoc = await UserModel.findOne({id: userId});
+        const userDoc = await UserModel.findOne({userId: userId});
         if(userDoc !== null){
             const user = new User(userDoc);
             return user;
@@ -27,13 +28,21 @@ class User {
             throw new Error(`そんな${userId}は存在しません`);
         }
     }
+    public static async createUserFromRequest(request: Request): Promise<User>{
+        const userDoc = new UserModel();
+        userDoc.name = request.body.userName;
+        console.log(userDoc);
+        const user = new User(await userDoc.save());
+        return user;
+    }
+
     public createTaskFromRequest(request: Request): void{
         const task = Task.createTaskFromRequest(request,this);
     }
 
     public async getTasks():  Promise<Task[]> {
         const user = (await UserModel.aggregate().lookup(
-            {from:'task',localField:'_id',foreignField:'author',as:'tasks'}
+            {from:'tasks',localField:'_id',foreignField:'author',as:'tasks'}
             ).match({_id:this.userDoc._id}))[0];
         const tasks:Task[] = user.tasks;
         return tasks;
@@ -48,11 +57,11 @@ class Task {
     public  static async createTaskFromRequest(request: Request, user:User): Promise<Task>{
         const taskDoc = new TaskModel();
         taskDoc.name = request.body.name;
-        taskDoc.startTime = request.body.startTime;
         taskDoc.icon = request.body.icon;
         taskDoc.description = request.body.description;
         taskDoc.dueTime = request.body.dueTime;
         taskDoc.author = user.userDoc._id
+        console.log(taskDoc);
         const task = new Task(await taskDoc.save());
         
         return task;
@@ -105,20 +114,42 @@ const todoapp = new TodoListApp();
 //     res.json({message:"hello"});
 // });
 
+
 // タスク全件取得
 api.get('/tasks', async (req, res) => {
-    const userId = undefined;
-    const user = await todoapp.getUser(userId);
-    res.send(await user.getTasks());
+    const userId = 1;
+    try {
+        const user = await todoapp.getUser(userId);
+        res.send(await user.getTasks());
+    } catch (error) {
+        res.status(204).send();
+        
+    }
+    
 });
+
+
+// ログイン
+api.post('/singup',async(req, res) => {
+    const userName = req.body.userName;
+    User.createUserFromRequest(req);
+    res.send();
+    
+})
 
 // タスクの追加
 api.post('/task',async(req, res) => {
     const userId = req.body.userId;
-    console.log(userId);
-    const user = await todoapp.getUser(userId);
-    user.createTaskFromRequest(req);
-    res.send();
+    console.log("req.body\n",req.body);
+    try {
+        const user = await todoapp.getUser(userId);
+        user.createTaskFromRequest(req);
+        res.send();
+    } catch (error) {
+        res.status(400).send();
+    }
+
+
 });
 
 // ユーザごとのタスク取得 

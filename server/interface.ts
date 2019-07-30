@@ -5,6 +5,7 @@ import * as mongoose from 'mongoose';
 
 // Taskインターフェース
  export interface Task{
+    taskId : number;
     name : string;
     startTime : Date;
     dueTime : Date;
@@ -21,6 +22,7 @@ export interface TaskDocument extends Task, mongoose.Document{}
 
 // ユーザのリスト
 export interface User {
+    userId : number;
     name: string;
 }
 
