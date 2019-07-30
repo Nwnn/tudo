@@ -14,7 +14,7 @@ mongoose.connect('mongodb://tudo-mongo:27017/todoDatabase',{useNewUrlParser : tr
 const userSchema:mongoose.Schema = new mongoose.Schema<UserDocument>({
     userId : Number,
     name : String,
-    // tasks : [mongoose.Schema.Types.ObjectId]
+    // tasks : [mongoose.Schema.Types.ObjectId] 
 });
 userSchema.plugin(AutoIncrement,{inc_field: 'userId'});
 // Userモデル作成

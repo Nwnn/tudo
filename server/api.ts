@@ -1,18 +1,19 @@
-// import { Router, Request } from 'express';
 import express, { Request } from 'express';
-// import {urlencoded, json } from 'body-parser';
 import bodyParser from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { UserModel, TaskModel } from './db';
+import passportLocal from 'passport-local';
+import passport from 'passport';
+
+const LocalStrategy = passport.Strategy;
+passport.use(new LocalStrategy())
 
 
-// export const api = express.Router();
-// api.use(bodyParser.json());
-// api.use(bodyParser.urlencoded({extended: true}));
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
+
 
 class User {
     public userDoc:UserDocument;
@@ -81,7 +82,7 @@ class Task {
         }
         await this.taskDoc.save()
     }public static async getTaskById(taskId:number):Promise<Task>{
-       const taskDoc = await TaskModel.findOne({id:taskId});
+       const taskDoc = await TaskModel.findOne({taskId:taskId});
        if(taskDoc !== null){
         const task = new Task(taskDoc);
         return task;
@@ -115,9 +116,11 @@ const todoapp = new TodoListApp();
 // });
 
 
+
 // タスク全件取得
 api.get('/tasks', async (req, res) => {
-    const userId = 1;
+    const userId = req.body.userId;
+    console.log(userId);
     try {
         const user = await todoapp.getUser(userId);
         res.send(await user.getTasks());
@@ -128,14 +131,17 @@ api.get('/tasks', async (req, res) => {
     
 });
 
-
-// ログイン
-api.post('/singup',async(req, res) => {
+// サインアップ
+api.post('/signup',async(req, res) => {
+    console.log(req.body);
     const userName = req.body.userName;
-    User.createUserFromRequest(req);
-    res.send();
-    
-})
+    try {
+        User.createUserFromRequest(req);
+        res.send();
+    } catch (error) {
+        res.status(400).send();
+    }
+});
 
 // タスクの追加
 api.post('/task',async(req, res) => {
@@ -153,16 +159,21 @@ api.post('/task',async(req, res) => {
 });
 
 // ユーザごとのタスク取得 
-api.get('/user/:userid/task',async(req, res)=>{
+api.get('/user/:userId/task',async(req, res)=>{
     const userId: number = Number(req.params.userId);
     // const userId = undefined;
-    const user = await todoapp.getUser(userId);
+    try {
+        const user = await todoapp.getUser(userId);
+        res.send(await user.getTasks());
+    } catch (error) {
+        res.status(204).send(error);
+    }
 
-    res.send(await user.getTasks());
 });
 
 // チェック
 api.put('/check',async(req, res)=> {
+    console.log(req.body);
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
     try {
@@ -175,29 +186,10 @@ api.put('/check',async(req, res)=> {
 
 // 更新
 
-api.put('/task/',async(req, res)=> {
+api.put('/task',async(req, res)=> {
     const taskId: number = req.body.taskId;
     const task = await todoapp.getTask(taskId);
     task.update(req.body)
     res.send()
 
-});
-
-// { taskid : "1",updatetask : updateTask }
-api.put('/update/:userid/',(req, res)=> {
-    const userid: number = Number(req.params.userid);
-    const taskid: number = Number(req.body.taskid);
-    const addtask:UpdateTaskMessage = req.body.updatetask;
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
-
-    const updatetask: UpdateTaskMessage = {
-            name:"更新",
-            startTime:new Date(),
-            dueTime:new Date(),
-            icon:undefined,
-            description:"",
-            status:false,
-        };
-    todoapp.update(updatetask);
-  
 });
