@@ -1,10 +1,12 @@
 import { UserDocument, TaskDocument } from'./interface'
 import mongoose from 'mongoose';
+
 // import sequense from 'mongoose-sequence'
 const AutoIncrement = require('mongoose-sequence')(mongoose);
  
 mongoose.set('useFindAndModify',false);
 mongoose.set('useCreateIndex',true);
+
 mongoose.connect('mongodb://tudo-mongo:27017/todoDatabase',{useNewUrlParser : true});
 
 
