@@ -12,6 +12,13 @@ abstract
 ## Requirement
 
 ## Usage
+mongodbのホストを conf.tsに追加  
+
+ex.
+```
+export const MONGO_HOST = 'mongodb://tudo-mongo:27017/todoDatabase';
+```
+
 デバッグ
 ```
 npm run dev

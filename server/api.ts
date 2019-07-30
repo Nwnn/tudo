@@ -6,8 +6,8 @@ import { UserModel, TaskModel } from './db';
 import passportLocal from 'passport-local';
 import passport from 'passport';
 
-const LocalStrategy = passport.Strategy;
-passport.use(new LocalStrategy())
+// const LocalStrategy = passport.Strategy;
+// passport.use(new LocalStrategy())
 
 
 export const api = express.Router();
