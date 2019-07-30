@@ -1,0 +1,71 @@
+POST http://localhost:80/api/task
+content-type: application/json
+
+{
+    "userId" : 1,
+    "name": "sample2",
+    "icon": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+
+### 
+
+POST http://localhost:80/api/singup
+content-type: application/json
+
+{
+    "userName": "sample2"
+}
+
+### 
+
+POST http://localhost:80/api/task
+content-type: application/json
+
+{
+    "userId" : 1,
+    "name" : "sample task",
+    "icon" : "",
+    "description" : "hogehoge",
+    "dueTime" : "2017-02-01T03:15:45.000Z"
+}
+# POST http://localhost:80/api/task
+# content-type: application/json
+
+# {
+#     "userId" : 1,
+#     "name": "sample",
+#     "icon": "Wed, 21 Oct 2015 18:27:50 GMT",
+#     "descreption" : "適当"
+#  }
+
+# PUT http://localhost:80/api/check
+# content-type: application/json
+
+# {
+#     "taskId": 11
+# }
+
+# PUT http://localhost:80/api/task
+# Content-Type: application/json
+
+# {
+#     "taskId": 12,
+#     "description": "更新した"
+# }
+
+
+# POST http://localhost:80/api/signup
+# Content-Type: application/json
+
+# {
+#     "userName": "佐藤"
+# }
+
+# GET http://localhost:80/api/user/1/task
+
+# GET http://localhost:80/api/tasks
+# Content-Type: application/json
+
+# {
+#     "userId" : 1
+# }

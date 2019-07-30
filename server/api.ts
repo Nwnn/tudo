@@ -1,280 +1,195 @@
-import express, { Router } from 'express';
-import bodyParser, { json } from 'body-parser';
+import express, { Request } from 'express';
+import bodyParser from 'body-parser';
+import { UserDocument, TaskDocument } from './interface';
+import {describe, it} from 'mocha'
+import { UserModel, TaskModel } from './db';
+import passportLocal from 'passport-local';
+import passport from 'passport';
+
+// const LocalStrategy = passport.Strategy;
+// passport.use(new LocalStrategy())
+
 
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
 
 
-// Taskインターフェース
-interface Task{
-    taskid: number;
-    name : string;
-    startTime : Date;
-    dueTime : Date;
-    icon : string;
-    description : string;
-    status : boolean;
-    createTime : Date;
-    updateTime : Date | undefined;
+class User {
+    public userDoc:UserDocument;
+    private constructor(userDoc: UserDocument){
+        this.userDoc = userDoc;
+    }
+    public static async getUserById(userId:number): Promise<User>{
+        const userDoc = await UserModel.findOne({userId: userId});
+        if(userDoc !== null){
+            const user = new User(userDoc);
+            return user;
+        }else {
+            throw new Error(`そんな${userId}は存在しません`);
+        }
+    }
+    public static async createUserFromRequest(request: Request): Promise<User>{
+        const userDoc = new UserModel();
+        userDoc.name = request.body.userName;
+        console.log(userDoc);
+        const user = new User(await userDoc.save());
+        return user;
+    }
 
+    public createTaskFromRequest(request: Request): void{
+        const task = Task.createTaskFromRequest(request,this);
+    }
+
+    public async getTasks():  Promise<Task[]> {
+        const user = (await UserModel.aggregate().lookup(
+            {from:'tasks',localField:'_id',foreignField:'author',as:'tasks'}
+            ).match({_id:this.userDoc._id}))[0];
+        const tasks:Task[] = user.tasks;
+        return tasks;
+    }
 }
 
-// タスクのリスト
-interface TaskList{
-    userid: number,
-    name: string;
-    tasks: Task[];
-}
-
-// update interface
-interface updateTask {
-    name: string|undefined,
-    startTime: Date|undefined,
-    dueTime: Date|undefined,
-    icon: string|undefined,
-    description: string|undefined,
-    status: boolean|undefined,
-}
-
-
-
-
-const employees:Array<TaskList>  = [
-    {
-        userid : 1,
-        name : "たかし",
-        tasks : [
-            {
-                taskid : 1,
-                name : "仕事",
-                startTime : new Date(),
-                dueTime : new Date(),
-                icon : "",
-                description : "",
-                status : false,
-                createTime : new Date(),
-                updateTime : undefined,
-            },
-            {
-                taskid : 2,
-                name : "家事",
-                startTime : new Date(),
-                dueTime : new Date(),
-                icon : "",
-                description : "",
-                status : true,
-                createTime : new Date(),
-                updateTime : undefined,
-            }
-        ]
-    },
-    {
-        userid: 2,
-        name : "ひろし",
-        tasks : [
-            {
-                taskid : 1,
-                name : "仕事",
-                startTime : new Date(),
-                dueTime : new Date(),
-                icon : "",
-                description : "",
-                status : false,
-                createTime : new Date(),
-                updateTime : undefined,
-            },
-            {
-                taskid : 2,
-                name : "運転",
-                startTime : new Date(),
-                dueTime : new Date(),
-                icon : "",
-                description : "",
-                status : true,
-                createTime : new Date(),
-                updateTime : undefined,
-            }
-        ]
+class Task {
+    public taskDoc:TaskDocument;
+    constructor(taskDoc: TaskDocument){
+        this.taskDoc = taskDoc;
     }
-]
-abstract class TaskController{
-    abstract getDataFromDatebase(taskList: Array<TaskList>):any;
-    abstract check(task: Task):void;
-    abstract update(updatetask: updateTask):void;
-    abstract add(userid: number, task: Task):void;
-    // abstract delete(taskid: string):void;
-    // abstract getTask(name: string): TaskList;
-}
-
-
-// 実装
-class TaskControllerImplementation extends TaskController {
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
-        return employees;
-    }
-
-    public check(task: Task): void {
-        task.status = true;
-        task.updateTime = new Date();
-    }
-
-    public update(updatetask: updateTask):void {
-
-    }
-    public add(userid: number,task: Task): void {
-        employees.forEach(employee => {
-            if(employee.userid === userid){
-                employee.tasks.push(task)
-            }
-        });
-    }
-
-}
-
-
-
-// アプリ全体の実装
-class TodoListApp {
-    //
-    private taskController: TaskController;
-    constructor(taskController: TaskController){
-        this.taskController = taskController;
-    }
-    
-    public getDataFromDatebase(taskList: Array<TaskList>): Array<TaskList> {
-        const task = taskList;
+    public  static async createTaskFromRequest(request: Request, user:User): Promise<Task>{
+        const taskDoc = new TaskModel();
+        taskDoc.name = request.body.name;
+        taskDoc.icon = request.body.icon;
+        taskDoc.description = request.body.description;
+        taskDoc.dueTime = request.body.dueTime;
+        taskDoc.author = user.userDoc._id
+        console.log(taskDoc);
+        const task = new Task(await taskDoc.save());
+        
         return task;
     }
 
-    public check(task: Task): void {
-        this.taskController.check(task);
+    public changeStatus(status: boolean){
+        this.taskDoc.status = status;
+        this.taskDoc.save();
+    }
+    public switchStatus(): void{
+        this.changeStatus(!this.taskDoc.status);
     }
 
-    public update(updatetask: updateTask): void {
-        this.update(updatetask);
+    public async update(request:{}): Promise<void>{
+        for (const key in request) {
+            this.taskDoc[key] = request[key];
+        }
+        await this.taskDoc.save()
+    }public static async getTaskById(taskId:number):Promise<Task>{
+       const taskDoc = await TaskModel.findOne({taskId:taskId});
+       if(taskDoc !== null){
+        const task = new Task(taskDoc);
+        return task;
+    }else {
+        throw new Error(`そんな${taskId}は存在しません`);
+    }
+    }
+}
+
+// アプリ全体の実装
+class TodoListApp {
+    constructor(){
+    }
+  
+    public async getUser(userId){
+        const user = await User.getUserById(userId);
+        return user;
     }
 
-    public getTask(userid: number): TaskList{
-        return employees.filter(employee => employee.userid === userid)[0];
-    }
-    public add(userid: number, task: Task) :void{
-        this.taskController.add(userid, task);
+    public async getTask(taskId: number): Promise<Task>{
+        const task = await Task.getTaskById(taskId);
+        return task;
+
     }
 
 }
 
+const todoapp = new TodoListApp();
 // api.get('/',(req, res) => {
 //     res.json({message:"hello"});
 // });
 
+
+
 // タスク全件取得
-api.get('/task', (req, res) => {
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
-    const list = todoapp.getDataFromDatebase(employees);
-
-    const todo: TaskList = JSON.parse(JSON.stringify(list));
-
-    res.send(todo);
+api.get('/tasks', async (req, res) => {
+    const userId = req.body.userId;
+    console.log(userId);
+    try {
+        const user = await todoapp.getUser(userId);
+        res.send(await user.getTasks());
+    } catch (error) {
+        res.status(204).send();
+        
+    }
+    
 });
 
-
-// ユーザごとのタスク取得
-api.get('/task/:userid',(req, res)=>{
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
-    const userid: number=Number(req.params.userid);
-    // console.log(id);
-    const task = todoapp.getTask(userid);
-    // console.log(task);
-    const todo: TaskList = JSON.parse(JSON.stringify(task));
-
-    res.send(todo);
+// サインアップ
+api.post('/signup',async(req, res) => {
+    console.log(req.body);
+    const userName = req.body.userName;
+    try {
+        User.createUserFromRequest(req);
+        res.send();
+    } catch (error) {
+        res.status(400).send();
+    }
 });
 
 // タスクの追加
-// { userid : "1" }
-api.post('/task',(req, res) => {
-    const userid:number = Number(req.body.userid);
-    console.log(userid);
-    let num: number = employees[userid -1].tasks.length + 1
-    const task:Task = {
-        taskid : num,
-        name : "宿題",
-        startTime : new Date(),
-        dueTime : new Date(),
-        icon : "",
-        description : "",
-        status : false,
-        createTime : new Date(),
-        updateTime : undefined
+api.post('/task',async(req, res) => {
+    const userId = req.body.userId;
+    console.log("req.body\n",req.body);
+    try {
+        const user = await todoapp.getUser(userId);
+        user.createTaskFromRequest(req);
+        res.send();
+    } catch (error) {
+        res.status(400).send();
     }
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
-    employees.forEach(employee => {
-        if(employee.userid === userid){
-            todoapp.add(userid,task);
-        }
-    });
-    res.redirect('/api/task/'+userid);
+
+
 });
 
+// ユーザごとのタスク取得 
+api.get('/user/:userId/task',async(req, res)=>{
+    const userId: number = Number(req.params.userId);
+    // const userId = undefined;
+    try {
+        const user = await todoapp.getUser(userId);
+        res.send(await user.getTasks());
+    } catch (error) {
+        res.status(204).send(error);
+    }
 
-// api.put('/check/:username?/:taskname?',(req, res)=>{
-//     const taskname = req.params.taskname;
-//     const name = req.params.username;
-//     console.log(req.params)
-//     const todoapp = new TodoListApp(new TaskControllerImplementation());
-
-//     employees.forEach(employee => {
-//         if(employee.name === name){
-//             employee.tasks.forEach(task => {
-//                 if(task.name === taskname){
-//                     todoapp.check(task);
-//                 }
-//             })
-//         }
-//     })
-//     res.send(name + 'の'+taskname+'を'+'checked');
-// });
+});
 
 // チェック
-// { userid : "1", taskid : "1" }
-api.put('/check',(req, res)=> {
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
-    const userid: number = Number(req.body.userid);
-    const taskid: number = Number(req.body.taskid);
-    // console.log(typeof id);
-    employees.forEach(employee=>{
-        if (employee.userid === userid){
-            employee.tasks.forEach(task =>{
-                if(task.taskid === taskid){
-                    todoapp.check(task);
-                }
-            });
-        }
-    });
-    res.redirect('/api/task/'+userid,303)
-    // res.json({message: "check success"});
+api.put('/check',async(req, res)=> {
+    console.log(req.body);
+    const taskId: number = req.body.taskId;
+    const task = await todoapp.getTask(taskId);
+    try {
+        task.switchStatus();
+        res.send();
+    } catch (error) {
+        res.status(400).send(error);
+    }
 });
 
 // 更新
-// { taskid : "1",updatetask : updateTask }
-api.put('/update/:userid/',(req, res)=> {
-    const userid: number = Number(req.params.userid);
-    const taskid: number = Number(req.body.taskid);
-    const addtask:updateTask = req.body.updatetask;
-    const todoapp = new TodoListApp(new TaskControllerImplementation());
 
-    const updatetask: updateTask = {
-            name:"更新",
-            startTime:new Date(),
-            dueTime:new Date(),
-            icon:undefined,
-            description:"",
-            status:false,
-        };
-    todoapp.update(updatetask);
+api.put('/task',async(req, res)=> {
+    const taskId: number = req.body.taskId;
+    const task = await todoapp.getTask(taskId);
+    task.update(req.body)
+    res.send()
+
 });
-
-
-
-// module.exports = api;
