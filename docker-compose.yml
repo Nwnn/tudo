@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+
+    tudo:
+      build: .
+      ports:
+        - 8080:80
+
+    tudo-mongo:
+      image: mongo:latest
+
+networks:
+  default:
