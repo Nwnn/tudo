@@ -19,6 +19,8 @@ REST APIの一覧は todo_api.md を参照してください
 ### Docker-compose
 DockerとDocker-composeを導入している場合、以下のコマンドでアプリの実行が出来ます  
 下記の必須環境の導入と作業は不要です
+
+任意のディレクトリに移動し  
 ```
 $ git clone https://github.com/Nwnn/tudo.git && cd tudo && docker-compose up
 ```
