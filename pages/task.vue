@@ -49,7 +49,10 @@
         methods: {
             onSubmit(evt) {
                 evt.preventDefault()
+                this.$axios.$post( './api/task', this.form )
+                
                 alert(JSON.stringify(this.form))
+                
             }
         }
     }
