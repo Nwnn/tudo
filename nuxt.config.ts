@@ -1,6 +1,7 @@
 import NuxtConfiguration from '@nuxt/config'
 
 const config: NuxtConfiguration = {
+  mode : "spa",
   head: {
     title: process.env.npm_package_name || '',
     meta: [

@@ -119,7 +119,7 @@ const todoapp = new TodoListApp();
 
 // タスク全件取得
 api.get('/tasks', async (req, res) => {
-    const userId = req.body.userId;
+    const userId = req.query.userId;
     console.log(userId);
     try {
         const user = await todoapp.getUser(userId);
