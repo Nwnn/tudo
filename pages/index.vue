@@ -3,22 +3,24 @@
     <div class="row mt-2">
       <div class="col-md-12">
         <b-card no-body class="text-center mb-2" v-for="task in tasks" :key="task.id">
-          <b-card-header v-if="!task.isComplete">
+          <b-card-header>
               <div class="row">
 
-                <b-form-checkbox v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
+                <b-form-checkbox v-model="task.status" v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
 
                 <div class="col-10 task-display">
 
                   <div class="row">
                     <div class="col-5">
-                      12/31 10:20
+                      {{ getFormattedDate(task.dueTime) }}
                     </div>
                     <div class="col-7 ">
                       <div>{{task.name}}</div>
                       <div v-if="task.workName">{{task.workName}}</div>
                       
                     </div>
+
+                    
                   </div>
 
                 </div>
@@ -49,9 +51,10 @@ div.task-display {
 <script lang="ts">
 import Vue from 'vue';
 import axios from '@nuxtjs/axios';
+import moment from 'moment';
 
 export default Vue.extend({
-    async asyncData(context) {
+  async asyncData(context) {
     let { data } = await context.$axios('./api/tasks', {
       params : {
           "userId" : 1
@@ -71,9 +74,19 @@ export default Vue.extend({
     onTaskCheckChange(task) {
       console.log(task);
       task.isComplete = true;
+      this.$axios.$put('./api/check', {
+        "taskId" : task.taskId
+      })
 
-    }
-  }
+    },
+
+    getFormattedDate(date) {
+      return moment(date).format("MM/DD hh:mm");
+    },
+
+
+  },
+
 })
 </script>
 
