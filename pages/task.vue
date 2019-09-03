@@ -5,7 +5,7 @@
         id="name"
         label="タスク名:"
         label-for="input-1"
-        description="--"
+        description=""
       >
         <b-form-input
           id="input-1"
@@ -23,6 +23,12 @@
         ></b-form-textarea>
       </b-form-group>
 
+      <b-form-group id="input-group-2" label="締め切り予定日時:" label-for="input-2">
+        <VueCtkDateTimePicker v-model="form.dueTime" format="YYYY-MM-DD HH:mm:ss"/>
+      </b-form-group>
+
+
+
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result">
@@ -32,8 +38,14 @@
 </template>
 
 <script>
+    import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+    import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
     import moment from 'moment'
+
     export default {
+        components: {
+          VueCtkDateTimePicker
+        },
         data() {
             return {
                 form: {
@@ -41,7 +53,7 @@
                     name : '',
                     icon : '',
                     description : '',
-                    dueTime : moment()
+                    dueTime : moment().format("YYYY-MM-DD HH:mm:ss")
 
                 }
             }

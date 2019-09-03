@@ -47,6 +47,7 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "ts-node": "^8.3.0",
+    "vue-ctk-date-time-picker": "^2.1.1",
     "vue-property-decorator": "^8.2.1"
   }
 }
