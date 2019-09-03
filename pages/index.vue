@@ -52,7 +52,13 @@ import axios from '@nuxtjs/axios';
 
 export default Vue.extend({
     async asyncData(context) {
-    let { data } = await context.$axios('http://localhost/api/tasks');
+    let { data } = await context.$axios('./api/tasks', {
+      params : {
+          "userId" : 1
+      }
+    });
+
+    console.log(data)
 
     return {
       tasks : data
