@@ -49,7 +49,7 @@
         data() {
             return {
                 form: {
-                    userId : 1,
+                    userId : this.$store.state.user.id,
                     name : '',
                     icon : '',
                     description : '',

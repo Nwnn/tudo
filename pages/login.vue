@@ -35,7 +35,7 @@
       methods: {
           async onSubmit(evt) {
             evt.preventDefault()
-            await this.$store.dispatch('login', { userId : this.form.userId })
+            await this.$store.dispatch('login', { userId : Number(this.form.userId) })
             this.$router.push('/')
 
           }
