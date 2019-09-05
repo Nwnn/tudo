@@ -23,7 +23,7 @@ DockerとDocker-composeを導入している場合、以下のコマンドでア
 $ git clone https://github.com/Nwnn/tudo.git && cd tudo && docker-compose up
 ```
 
-導入後、 http://localhost:8080 に接続可能か確認してください  
+導入後、 http://127.0.0.1:8080 に接続可能か確認してください  
 REST APIの一覧は todo_api.md を参照してください
 
 
@@ -79,7 +79,7 @@ $[Host] docker run -itd --name tudo --publish 80:80 node:latest
 
 （　VSCodeから上のコンテナに入って　）
 
-#[Guest] git clone git@github.com:Nwnn/tudo.git
+#[Guest] git clone https://github.com/Nwnn/tudo.git
 ```
 
 mongoのコンテナ作成
@@ -108,6 +108,7 @@ export const MONGO_HOST = 'mongodb://tudo-mongo:27017/todoDatabase';
 ```
 
 ```
+$ cd tudo
 $ npm i
 $ npm run dev
 ```
