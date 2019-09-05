@@ -1,11 +1,12 @@
 <template>
   <div class="container">
+    {{ $store.state.user }}
+
     <div class="row mt-2">
       <div class="col-md-12">
         <b-card no-body class="text-center mb-2" v-for="task in tasks" :key="task.id">
           <b-card-header>
               <div class="row">
-
                 <b-form-checkbox v-model="task.status" v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
 
                 <div class="col-10 task-display">
@@ -61,7 +62,7 @@ export default Vue.extend({
       }
     });
 
-    console.log(data)
+    
 
     return {
       tasks : data
@@ -77,6 +78,8 @@ export default Vue.extend({
       this.$axios.$put('./api/check', {
         "taskId" : task.taskId
       })
+
+      console.log(this)
 
     },
 

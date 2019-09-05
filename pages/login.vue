@@ -33,10 +33,11 @@
 
       },
       methods: {
-          onSubmit(evt) {
+          async onSubmit(evt) {
             evt.preventDefault()
-              console.log(this.form)
-              
+            await this.$store.dispatch('login', { userId : this.form.userId })
+            this.$router.push('/')
+
           }
       }
     }
