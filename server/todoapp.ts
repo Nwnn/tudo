@@ -94,6 +94,11 @@ class TodoListApp {
         return user;
     }
 
+    public async getUserByName(username){
+        const user = await User.getUserById(userId);
+        return user;
+    }
+
     public async getTask(taskId: number): Promise<Task>{
         const task = await Task.getTaskById(taskId);
         return task;

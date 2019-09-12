@@ -102,10 +102,10 @@ api.post('/tasks/update/:taskId', async(req, res)=> {
 
 // ユーザごとのタスク取得 
 api.get('/users/:username/tasks',async(req, res)=>{
-    const userId: number = Number(req.params.userId);
+    const username: number = Number(req.params.username);
     // const userId = undefined;
     try {
-        const user = await todoapp.getUser(userId);
+        const user = await todoapp.getUser(username);
         res.send(await user.getTasks());
     } catch (error) {
         res.status(204).send(error);
