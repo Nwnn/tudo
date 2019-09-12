@@ -3,12 +3,20 @@ import bodyParser from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { UserModel, TaskModel } from './db';
+import session from 'express-session';
 import passport from './authorize'
+
 
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
+api.use(session({ 
+    secret : "https://www.youtube.com/watch?v=nNeOqvtS39c",
+    resave : true,
+    saveUninitialized : true
+}))
 api.use(passport.initialize())
+api.use(passport.session())
 
 class User {
     public userDoc:UserDocument;
@@ -169,12 +177,20 @@ api.post('/signout', (req, res) => {
 
 // タスクの追加
 api.post('/task',async(req, res) => {
-    const userId = req.body.userId;
-    console.log("req.body\n",req.body);
+    console.log("/task req.body\n",req.body);
+
     try {
-        const user = await todoapp.getUser(userId);
-        user.createTaskFromRequest(req);
-        res.send();
+        if(req.isAuthenticated()){
+            const userId = req.user.userId;
+            const user = await todoapp.getUser(userId);
+            user.createTaskFromRequest(req);
+            res.send();
+
+        } else {
+            res.status(401).send()
+            
+        }
+
     } catch (error) {
         res.status(400).send();
     }

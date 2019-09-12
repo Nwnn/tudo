@@ -35,8 +35,9 @@ passport.serializeUser((user: UserDocument, done) => {
 })
 
 passport.deserializeUser(async (userid: number, done) => {
+    console.log(userid)
     try {
-        const user = await UserModel.findOne({ userid: userid })
+        const user = await UserModel.findOne({ userId: userid })
         return done(null, user);
 
     } catch (error) {
