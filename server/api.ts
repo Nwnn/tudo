@@ -28,7 +28,7 @@ class User {
 
     public static async createUserFromRequest(request: Request): Promise<User>{
         const userDoc = new UserModel();
-        userDoc.name = request.body.userName;
+        userDoc.username = request.body.username;
         console.log(userDoc);
         const user = new User(await userDoc.save());
         return user;
@@ -134,12 +134,29 @@ api.post('/signup',async(req, res) => {
     console.log(req.body);
     const userName = req.body.userName;
     try {
-        User.createUserFromRequest(req);
-        res.send();
+        if(req.body.password == undefined) {
+            throw new Error("パスがない");
+            
+        }
+
+        const user = await User.createUserFromRequest(req);
+        user.userDoc.password = req.body.password
+        user.userDoc.save()
+        res.send(user);
+
     } catch (error) {
         res.status(400).send();
+
     }
+
 });
+
+api.post('/signin', passport.authenticate('local'))
+api.post('/signout', (req, res) => {
+    req.logout();
+    res.send("signout");
+
+})
 
 // タスクの追加
 api.post('/task',async(req, res) => {

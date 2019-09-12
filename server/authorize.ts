@@ -4,9 +4,9 @@ import { UserModel, TaskModel } from './db';
 import { UserDocument } from './interface';
 
 
-passport.use(new LocalStrategy(async (userId, password, done) => {
+passport.use(new LocalStrategy(async (username, password, done) => {
     try {
-        const user = await UserModel.findOne({ userId: userId })
+        const user = await UserModel.findOne({ username: userId })
 
         if(user !== null) {
             if(user.password === password) {

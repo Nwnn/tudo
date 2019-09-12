@@ -35,7 +35,7 @@ export interface UserDocument extends User, mongoose.Document{}
 // タスクのリスト
 export interface User {
     userid: number,
-    name: string;
+    username: string;
     password: string;
     tasks: Task[];
     
