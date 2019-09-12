@@ -1,3 +1,7 @@
+GET http://localhost:80/api/tasks
+
+###
+
 POST http://localhost:80/api/task
 content-type: application/json
 
@@ -13,7 +17,7 @@ POST http://localhost:80/api/signup
 content-type: application/json
 
 {
-    "username" : "oosawatakao2",
+    "username" : "oosawatakao5",
     "password" : "pass"
 }
 
@@ -22,7 +26,7 @@ POST http://localhost:80/api/signin
 content-type: application/json
 
 {
-    "username": "oosawatakao",
+    "username": "oosawatakao5",
     "password": "pass"
 }
 
