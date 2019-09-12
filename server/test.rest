@@ -35,7 +35,8 @@ content-type: application/json
   "name": "タスク",
   "icon": "",
   "description": "やること一覧",
-  "dueTime": "2019-09-20 21:11:00"
+  "dueTime": "2019-09-20 21:11:00",
+  "member" : ["user115"]
 }
 
 ### タスク更新（チェックの例）

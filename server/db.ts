@@ -69,7 +69,7 @@ const taskSchema:mongoose.Schema = new mongoose.Schema<TaskDocument>({
     createTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
     updateTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
     author : mongoose.Schema.Types.String,
-    member : {type : [mongoose.Schema.Types.ObjectId],default : undefined}
+    member : {type : [mongoose.Schema.Types.String],default : undefined}
 });
 taskSchema.plugin(AutoIncrement,{inc_field: "taskId"})
 // task

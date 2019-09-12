@@ -39,7 +39,7 @@ export namespace TodoApp {
             const user = (await UserModel.aggregate().lookup({
                 from: 'tasks',
                 localField: 'username',
-                foreignField: 'author',
+                foreignField: 'member',
                 as: 'tasks'
             }).match({ _id: _id }))[0];
             
