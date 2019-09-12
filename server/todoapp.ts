@@ -1,110 +1,87 @@
 import express, { Request } from 'express';
-import { UserDocument, TaskDocument } from './interface';
-import {describe, it} from 'mocha'
-import { UserModel, TaskModel } from './db';
+import { UserModel, TaskModel, UserDocument, TaskDocument, Task  } from './db';
 
-export class User {
-    public userDoc:UserDocument;
-    private constructor(userDoc: UserDocument){
-        this.userDoc = userDoc;
+export namespace TodoApp {
+    interface UserCreateRequest {
+        username : string,
+        displayName : string,
+        password : string
+
     }
 
-    public static async getUserById(userId:number): Promise<User>{
-        const userDoc = await UserModel.findOne({userId: userId});
-        if(userDoc !== null){
-            const user = new User(userDoc);
-            return user;
-        }else {
-            throw new Error(`そんな${userId}は存在しません`);
+    export class User {
+        static async createUser(params: UserCreateRequest){
+            const user = new UserModel();
+            for (const key in params) {
+                user[key] = params[key];
+            }
+
+            const saved = await user.save();
+            return {
+                username : saved.username,
+            }
+
         }
+
     }
 
-    public static async createUserFromRequest(request: Request): Promise<User>{
-        const userDoc = new UserModel();
-        userDoc.username = request.body.username;
+    interface TaskCreateRequest {
+        name : string
+        icon : string;
+        description : string;
+        dueTime : Date;
         
-        console.log("createUserFromRequest", userDoc);
-        const user = new User(await userDoc.save());
-        return user;
     }
 
-    public createTaskFromRequest(request: Request): void{
-        const task = Task.createTaskFromRequest(request,this);
-    }
+    export class Tasks {
+        static async getTasksByUsername(username: string): Promise<[]> {
+            const _id = (await UserModel.findOne({username : username}))!._id;
+            const user = (await UserModel.aggregate().lookup({
+                from: 'tasks',
+                localField: 'username',
+                foreignField: 'author',
+                as: 'tasks'
+            }).match({ _id: _id }))[0];
+            
+            const tasks = user.tasks;
+            return tasks;
 
-    public async getTasks():  Promise<Task[]> {
-        const user = (await UserModel.aggregate().lookup(
-            {from:'tasks',localField:'_id',foreignField:'author',as:'tasks'}
-            ).match({_id:this.userDoc._id}))[0];
-        const tasks:Task[] = user.tasks;
-        return tasks;
-    }
-
-}
-
-class Task {
-    public taskDoc:TaskDocument;
-    constructor(taskDoc: TaskDocument){
-        this.taskDoc = taskDoc;
-    }
-    public  static async createTaskFromRequest(request: Request, user:User): Promise<Task>{
-        const taskDoc = new TaskModel();
-        taskDoc.name = request.body.name;
-        taskDoc.icon = request.body.icon;
-        taskDoc.description = request.body.description;
-        taskDoc.dueTime = request.body.dueTime;
-        taskDoc.author = user.userDoc._id
-        console.log(taskDoc);
-        const task = new Task(await taskDoc.save());
-        
-        return task;
-    }
-
-    public changeStatus(status: boolean){
-        this.taskDoc.status = status;
-        this.taskDoc.save();
-    }
-    public switchStatus(): void{
-        this.changeStatus(!this.taskDoc.status);
-    }
-
-    public async update(request:{}): Promise<void>{
-        for (const key in request) {
-            this.taskDoc[key] = request[key];
         }
-        await this.taskDoc.save()
-    }public static async getTaskById(taskId:number):Promise<Task>{
-       const taskDoc = await TaskModel.findOne({taskId:taskId});
-       if(taskDoc !== null){
-        const task = new Task(taskDoc);
-        return task;
-    }else {
-        throw new Error(`そんな${taskId}は存在しません`);
+
+        static async createTask(author: string, params: TaskCreateRequest){
+            const task = new TaskModel();
+            for (const key in params) {
+                console.log(key)
+                task[key] = params[key];
+
+            }
+
+            task.author = author;
+
+            await task.save();
+
+        }
+
+        static async updateTask(taskId: number, params: Task) {
+            const task = await TaskModel.findOne({ taskId: taskId });
+            if(task !== null){
+                for (const key in params) {
+                    console.log(key)
+                    task[key] = params[key];
+    
+                }
+
+                task.updateTime = new Date();
+
+                task.save();
+
+            } else {
+                throw new Error(`存在しないタスクId(${ taskId })`);
+
+            }
+
+        }
+
     }
-    }
+
 }
-
-// アプリ全体の実装
-class TodoListApp {
-    constructor(){
-    }
-  
-    public async getUser(userId){
-        const user = await User.getUserById(userId);
-        return user;
-    }
-
-    public async getUserByName(username){
-        const user = await User.getUserById(userId);
-        return user;
-    }
-
-    public async getTask(taskId: number): Promise<Task>{
-        const task = await Task.getTaskById(taskId);
-        return task;
-
-    }
-
-}
-
-export const todoapp = new TodoListApp();

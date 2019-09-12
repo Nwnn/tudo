@@ -2,7 +2,7 @@ import express, { Request } from 'express';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import passport from './authorize';
-import { todoapp, User } from './todoapp'
+import { TodoApp } from './todoapp'
 
 export const api = express.Router();
 api.use(bodyParser.json());
@@ -16,21 +16,11 @@ api.use(passport.initialize())
 api.use(passport.session())
 
 
-
-api.post('/signup',async(req, res) => {
+api.post('/signup',async (req, res) => {
     console.log(req.body);
     try {
-        if(req.body.password == undefined) {
-            throw new Error("パスがない");
-            
-        }
-
-        const user = await User.createUserFromRequest(req);
-        user.userDoc.password = req.body.password;
-        user.userDoc.save();
-        console.log(user)
-        
-        res.send(user);
+        const createdUserInfo = await TodoApp.User.createUser(req.body);
+        res.send(createdUserInfo);
 
     } catch (error) {
         res.status(400).send();
@@ -57,11 +47,10 @@ api.post('/signout', (req, res) => {
 })
 
 api.get('/tasks', async (req, res) => {
-    console.log(req.user)
     try {
-        const userId = req.user.userId;
-        const user = await todoapp.getUser(userId);
-        res.send(await user.getTasks());
+        const userTasks = await TodoApp.Tasks.getTasksByUsername(req.user.username)
+        res.send(await userTasks);
+
     } catch (error) {
         res.status(204).send();
         
@@ -74,9 +63,8 @@ api.post('/tasks/create',async(req, res) => {
 
     try {
         if(req.isAuthenticated()){
-            const userId = req.user.userId;
-            const user = await todoapp.getUser(userId);
-            user.createTaskFromRequest(req);
+            const author = req.user.username;
+            await TodoApp.Tasks.createTask(author, req.body);
             res.send();
 
         } else {
@@ -85,7 +73,9 @@ api.post('/tasks/create',async(req, res) => {
         }
 
     } catch (error) {
+        console.log(error)
         res.status(400).send();
+
     }
 
 
@@ -93,37 +83,31 @@ api.post('/tasks/create',async(req, res) => {
 
 // 更新
 api.post('/tasks/update/:taskId', async(req, res)=> {
-    const taskId: number = req.body.taskId;
-    const task = await todoapp.getTask(taskId);
-    task.update(req.body)
-    res.send()
+    try {
+        const taskId: number = req.params.taskId;
+        const task = await TodoApp.Tasks.updateTask(taskId, req.body);
+        res.send();
+
+    } catch (error) {
+        res.status(400).send();
+    }
+
 
 });
 
 // ユーザごとのタスク取得 
 api.get('/users/:username/tasks',async(req, res)=>{
     const username: number = Number(req.params.username);
-    // const userId = undefined;
+
     try {
-        const user = await todoapp.getUser(username);
-        res.send(await user.getTasks());
+        const userTasks = await TodoApp.Tasks.getTasksByUsername(req.user.username)
+        res.send(userTasks);
+
     } catch (error) {
         res.status(204).send(error);
+
     }
 
 });
-
-// チェック
-// api.put('/check',async(req, res)=> {
-//     console.log(req.body);
-//     const taskId: number = req.body.taskId;
-//     const task = await todoapp.getTask(taskId);
-//     try {
-//         task.switchStatus();
-//         res.send();
-//     } catch (error) {
-//         res.status(400).send(error);
-//     }
-// });
 
 

@@ -1,7 +1,6 @@
 import { Strategy as LocalStrategy } from 'passport-local';
 import passport from 'passport';
-import { UserModel, TaskModel } from './db';
-import { UserDocument } from './interface';
+import { UserModel, UserDocument } from './db';
 
 
 passport.use(new LocalStrategy(async (username, password, done) => {
@@ -30,14 +29,13 @@ passport.use(new LocalStrategy(async (username, password, done) => {
 }))
 
 passport.serializeUser((user: UserDocument, done) => {
-    return done(null, user.userId)
+    return done(null, user.username)
 
 })
 
-passport.deserializeUser(async (userid: number, done) => {
-    console.log(userid)
+passport.deserializeUser(async (username: string, done) => {
     try {
-        const user = await UserModel.findOne({ userId: userid })
+        const user = await UserModel.findOne({ username: username })
         return done(null, user);
 
     } catch (error) {

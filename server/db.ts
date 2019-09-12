@@ -1,4 +1,3 @@
-import { UserDocument, TaskDocument } from'./interface'
 import mongoose from 'mongoose';
 import * as conf from './conf';
 
@@ -11,18 +10,54 @@ mongoose.set('useCreateIndex',true);
 mongoose.connect(conf.MONGO_HOST, {useNewUrlParser : true});
 
 
-// userスキーマ作成
+/****************************************
+    ユーザー定義
+****************************************/
+
+export interface User {
+    username: string,
+    displayName: string;
+    password: string;
+    tasks: Task[];
+    
+}
+
+// mongoose用のUser schema types として継承
+export interface UserDocument extends User, mongoose.Document{}
+
+// mongo用データベーススキーマ定義
 const userSchema:mongoose.Schema = new mongoose.Schema<UserDocument>({
-    userId : Number,
     username : String,
+    displayName : String,
     password : String
     // tasks : [mongoose.Schema.Types.ObjectId] 
 });
-userSchema.plugin(AutoIncrement,{inc_field: 'userId'});
-// Userモデル作成
+
 export const UserModel = mongoose.model<UserDocument>('user',userSchema);
 
-// taskスキーマ作成
+
+/****************************************
+    タスク定義
+****************************************/
+
+export interface Task{
+    // id : number;
+    name : string;
+    startTime : Date;
+    dueTime : Date;
+    icon : string;
+    description : string;
+    status : boolean;
+    createTime : Date;
+    updateTime : Date | undefined;
+    author : string,
+    member : [string]
+
+}
+
+// mongoose用のTask schema types として継承
+export interface TaskDocument extends Task, mongoose.Document{}
+
 const taskSchema:mongoose.Schema = new mongoose.Schema<TaskDocument>({
     taskId : Number,
     name : String,
@@ -33,7 +68,7 @@ const taskSchema:mongoose.Schema = new mongoose.Schema<TaskDocument>({
     status : {type : mongoose.Schema.Types.Boolean, default : false},
     createTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
     updateTime : { type : mongoose.Schema.Types.Date, default : Date.now()},
-    author : {type: mongoose.Schema.Types.ObjectId},
+    author : mongoose.Schema.Types.String,
     member : {type : [mongoose.Schema.Types.ObjectId],default : undefined}
 });
 taskSchema.plugin(AutoIncrement,{inc_field: "taskId"})
