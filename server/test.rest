@@ -1,35 +1,36 @@
+### ログイン中ユーザのタスク取得
 GET http://localhost:80/api/tasks
 
-###
-
+### ログイン中ユーザのタスクの追加
 POST http://localhost:80/api/task
 content-type: application/json
 
 {
-    "name": "sample2",
-    "icon": "Wed, 21 Oct 2015 18:27:50 GMT"
+  "name": "タスク",
+  "icon": "",
+  "description": "やること一覧",
+  "dueTime": "2019-09-20 21:11:00"
 }
 
-### 
-
+### ユーザ登録
 POST http://localhost:80/api/signup
 content-type: application/json
 
 {
-    "username" : "oosawatakao5",
+    "username" : "user114",
     "password" : "pass"
 }
 
-### 
+### ログイン
 POST http://localhost:80/api/signin
 content-type: application/json
 
 {
-    "username": "oosawatakao5",
+    "username": "user114",
     "password": "pass"
 }
 
-### 
+### ログアウト
 POST http://localhost:80/api/signout
 
 ### 
