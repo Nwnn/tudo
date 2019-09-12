@@ -3,23 +3,27 @@ import bodyParser from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { UserModel, TaskModel } from './db';
-import passportLocal from 'passport-local';
-import passport from 'passport';
-
-// const LocalStrategy = passport.Strategy;
-// passport.use(new LocalStrategy())
+import session from 'express-session';
+import passport from './authorize'
 
 
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
-
+api.use(session({ 
+    secret : "https://www.youtube.com/watch?v=nNeOqvtS39c",
+    resave : true,
+    saveUninitialized : true
+}))
+api.use(passport.initialize())
+api.use(passport.session())
 
 class User {
     public userDoc:UserDocument;
     private constructor(userDoc: UserDocument){
         this.userDoc = userDoc;
     }
+
     public static async getUserById(userId:number): Promise<User>{
         const userDoc = await UserModel.findOne({userId: userId});
         if(userDoc !== null){
@@ -29,10 +33,12 @@ class User {
             throw new Error(`そんな${userId}は存在しません`);
         }
     }
+
     public static async createUserFromRequest(request: Request): Promise<User>{
         const userDoc = new UserModel();
-        userDoc.name = request.body.userName;
-        console.log(userDoc);
+        userDoc.username = request.body.username;
+        userDoc.password = request.body.password;
+        console.log("createUserFromRequest", userDoc);
         const user = new User(await userDoc.save());
         return user;
     }
@@ -48,6 +54,7 @@ class User {
         const tasks:Task[] = user.tasks;
         return tasks;
     }
+
 }
 
 class Task {
@@ -119,9 +126,9 @@ const todoapp = new TodoListApp();
 
 // タスク全件取得
 api.get('/tasks', async (req, res) => {
-    const userId = req.query.userId;
-    console.log(userId);
+    console.log(req.user)
     try {
+        const userId = req.user.userId;
         const user = await todoapp.getUser(userId);
         res.send(await user.getTasks());
     } catch (error) {
@@ -134,23 +141,56 @@ api.get('/tasks', async (req, res) => {
 // サインアップ
 api.post('/signup',async(req, res) => {
     console.log(req.body);
-    const userName = req.body.userName;
     try {
-        User.createUserFromRequest(req);
-        res.send();
+        if(req.body.password == undefined) {
+            throw new Error("パスがない");
+            
+        }
+
+        const user = await User.createUserFromRequest(req);
+        console.log(user)
+        res.send(user);
+
     } catch (error) {
         res.status(400).send();
+
     }
+
 });
+
+api.post('/signin', passport.authenticate('local'), (req, res) => {
+    if(req.isAuthenticated()){
+        res.status(200).send({ name : req.user.username });
+
+    } else {
+        res.status(401).send()
+
+    }
+
+})
+
+api.post('/signout', (req, res) => {
+    req.logout();
+    res.send("signout");
+
+})
 
 // タスクの追加
 api.post('/task',async(req, res) => {
-    const userId = req.body.userId;
-    console.log("req.body\n",req.body);
+    console.log("/task req.body\n",req.body);
+
     try {
-        const user = await todoapp.getUser(userId);
-        user.createTaskFromRequest(req);
-        res.send();
+        if(req.isAuthenticated()){
+            const userId = req.user.userId;
+            const user = await todoapp.getUser(userId);
+            user.createTaskFromRequest(req);
+            res.send();
+
+        } else {
+            res.status(401).send()
+            
+        }
+
     } catch (error) {
         res.status(400).send();
     }

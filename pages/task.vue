@@ -42,6 +42,8 @@
     import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
     import moment from 'moment'
 
+    moment.locale('ja');
+
     export default {
         components: {
           VueCtkDateTimePicker
@@ -49,7 +51,7 @@
         data() {
             return {
                 form: {
-                    userId : 1,
+                    userId : this.$store.state.user.id,
                     name : '',
                     icon : '',
                     description : '',

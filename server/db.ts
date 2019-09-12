@@ -14,7 +14,8 @@ mongoose.connect(conf.MONGO_HOST, {useNewUrlParser : true});
 // userスキーマ作成
 const userSchema:mongoose.Schema = new mongoose.Schema<UserDocument>({
     userId : Number,
-    name : String,
+    username : String,
+    password : String
     // tasks : [mongoose.Schema.Types.ObjectId] 
 });
 userSchema.plugin(AutoIncrement,{inc_field: 'userId'});

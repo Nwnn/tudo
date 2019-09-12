@@ -19,7 +19,7 @@ JSON形式で記述（ ここでは "key" : 型 で表記する ）
 ```
 {
     "userId": string,
-    "userName" : string
+    "username" : string
 }
 ```
 
