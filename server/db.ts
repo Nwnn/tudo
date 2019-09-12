@@ -42,7 +42,7 @@ export const UserModel = mongoose.model<UserDocument>('user',userSchema);
 
 export interface Task{
     // id : number;
-    name : string;
+    title : string;
     startTime : Date;
     dueTime : Date;
     icon : string;
@@ -60,7 +60,7 @@ export interface TaskDocument extends Task, mongoose.Document{}
 
 const taskSchema:mongoose.Schema = new mongoose.Schema<TaskDocument>({
     taskId : Number,
-    name : String,
+    title : String,
     startTime : mongoose.Schema.Types.Date,
     dueTime : mongoose.Schema.Types.Date,
     icon : mongoose.Schema.Types.String ,
