@@ -3,12 +3,7 @@ import bodyParser from 'body-parser';
 import { UserDocument, TaskDocument } from './interface';
 import {describe, it} from 'mocha'
 import { UserModel, TaskModel } from './db';
-import passportLocal from 'passport-local';
-import passport from 'passport';
-
-// const LocalStrategy = passport.Strategy;
-// passport.use(new LocalStrategy())
-
+import passport from './authorize'
 
 export const api = express.Router();
 api.use(bodyParser.json());
@@ -20,6 +15,7 @@ class User {
     private constructor(userDoc: UserDocument){
         this.userDoc = userDoc;
     }
+
     public static async getUserById(userId:number): Promise<User>{
         const userDoc = await UserModel.findOne({userId: userId});
         if(userDoc !== null){
@@ -29,6 +25,7 @@ class User {
             throw new Error(`そんな${userId}は存在しません`);
         }
     }
+
     public static async createUserFromRequest(request: Request): Promise<User>{
         const userDoc = new UserModel();
         userDoc.name = request.body.userName;
@@ -48,6 +45,7 @@ class User {
         const tasks:Task[] = user.tasks;
         return tasks;
     }
+
 }
 
 class Task {

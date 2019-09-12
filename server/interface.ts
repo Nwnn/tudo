@@ -30,12 +30,13 @@ export interface User {
 // User schema types
 export interface UserDocument extends User, mongoose.Document{}
 
-}
+
 
 // タスクのリスト
 export interface User {
     userid: number,
     name: string;
+    password: string;
     tasks: Task[];
     
 }
