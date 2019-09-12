@@ -13,7 +13,7 @@ POST http://localhost:80/api/signup
 content-type: application/json
 
 {
-    "userName" : "tanaka",
+    "username" : "oosawatakao2",
     "password" : "pass"
 }
 
@@ -22,7 +22,7 @@ POST http://localhost:80/api/signin
 content-type: application/json
 
 {
-    "username": "tanaka",
+    "username": "oosawatakao",
     "password": "pass"
 }
 
