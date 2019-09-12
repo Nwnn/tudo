@@ -2,7 +2,7 @@
 GET http://localhost:80/api/tasks
 
 ### ログイン中ユーザのタスクの追加
-POST http://localhost:80/api/task
+POST http://localhost:80/api/tasks/create
 content-type: application/json
 
 {
@@ -11,6 +11,11 @@ content-type: application/json
   "description": "やること一覧",
   "dueTime": "2019-09-20 21:11:00"
 }
+
+### 他人のタスク閲覧
+GET http://localhost:80/api/users/user114/tasks
+content-type: application/json
+
 
 ### ユーザ登録
 POST http://localhost:80/api/signup
