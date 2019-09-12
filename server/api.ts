@@ -29,7 +29,7 @@ class User {
     public static async createUserFromRequest(request: Request): Promise<User>{
         const userDoc = new UserModel();
         userDoc.username = request.body.username;
-        console.log(userDoc);
+        console.log("createUserFromRequest", userDoc);
         const user = new User(await userDoc.save());
         return user;
     }
@@ -132,7 +132,7 @@ api.get('/tasks', async (req, res) => {
 // サインアップ
 api.post('/signup',async(req, res) => {
     console.log(req.body);
-    const userName = req.body.userName;
+    const userName = req.body.username;
     try {
         if(req.body.password == undefined) {
             throw new Error("パスがない");
@@ -140,6 +140,7 @@ api.post('/signup',async(req, res) => {
         }
 
         const user = await User.createUserFromRequest(req);
+        console.log(user)
         user.userDoc.password = req.body.password
         user.userDoc.save()
         res.send(user);

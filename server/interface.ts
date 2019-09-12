@@ -21,11 +21,6 @@ import * as mongoose from 'mongoose';
 // Task schema types
 export interface TaskDocument extends Task, mongoose.Document{}
 
-// ユーザのリスト
-export interface User {
-    // id : number;
-    name: string;
-}
 
 // User schema types
 export interface UserDocument extends User, mongoose.Document{}

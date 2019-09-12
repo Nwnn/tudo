@@ -6,7 +6,8 @@ import { UserDocument } from './interface';
 
 passport.use(new LocalStrategy(async (username, password, done) => {
     try {
-        const user = await UserModel.findOne({ username: userId })
+        const user = await UserModel.findOne({ username: username })
+        console.log(user)
 
         if(user !== null) {
             if(user.password === password) {
@@ -33,9 +34,9 @@ passport.serializeUser((user: UserDocument, done) => {
 
 })
 
-passport.deserializeUser(async (userId: number, done) => {
+passport.deserializeUser(async (userid: number, done) => {
     try {
-        const user = await UserModel.findOne({ userId: userId })
+        const user = await UserModel.findOne({ userid: userid })
         return done(null, user);
 
     } catch (error) {
