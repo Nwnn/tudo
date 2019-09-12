@@ -8,7 +8,7 @@ import passport from './authorize'
 export const api = express.Router();
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({extended: true}));
-
+api.use(passport.initialize())
 
 class User {
     public userDoc:UserDocument;
@@ -29,6 +29,7 @@ class User {
     public static async createUserFromRequest(request: Request): Promise<User>{
         const userDoc = new UserModel();
         userDoc.username = request.body.username;
+        userDoc.password = request.body.password;
         console.log("createUserFromRequest", userDoc);
         const user = new User(await userDoc.save());
         return user;
@@ -117,9 +118,9 @@ const todoapp = new TodoListApp();
 
 // タスク全件取得
 api.get('/tasks', async (req, res) => {
-    const userId = req.query.userId;
-    console.log(userId);
+    console.log(req.user)
     try {
+        const userId = req.user.userId;
         const user = await todoapp.getUser(userId);
         res.send(await user.getTasks());
     } catch (error) {
@@ -132,7 +133,6 @@ api.get('/tasks', async (req, res) => {
 // サインアップ
 api.post('/signup',async(req, res) => {
     console.log(req.body);
-    const userName = req.body.username;
     try {
         if(req.body.password == undefined) {
             throw new Error("パスがない");
@@ -141,8 +141,6 @@ api.post('/signup',async(req, res) => {
 
         const user = await User.createUserFromRequest(req);
         console.log(user)
-        user.userDoc.password = req.body.password
-        user.userDoc.save()
         res.send(user);
 
     } catch (error) {
@@ -152,7 +150,17 @@ api.post('/signup',async(req, res) => {
 
 });
 
-api.post('/signin', passport.authenticate('local'))
+api.post('/signin', passport.authenticate('local'), (req, res) => {
+    if(req.isAuthenticated()){
+        res.status(200).send({ name : req.user.username });
+
+    } else {
+        res.status(401).send()
+
+    }
+
+})
+
 api.post('/signout', (req, res) => {
     req.logout();
     res.send("signout");

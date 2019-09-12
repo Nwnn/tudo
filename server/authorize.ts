@@ -30,7 +30,7 @@ passport.use(new LocalStrategy(async (username, password, done) => {
 }))
 
 passport.serializeUser((user: UserDocument, done) => {
-    return done(null, user.userid)
+    return done(null, user.userId)
 
 })
 
