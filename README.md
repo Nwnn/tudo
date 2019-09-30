@@ -23,9 +23,10 @@ DockerとDocker-composeを導入している場合、以下のコマンドでア
 $ git clone https://github.com/Nwnn/tudo.git && cd tudo && docker-compose up
 ```
 
-導入後、 http://127.0.0.1:8080 に接続可能か確認してください  
+導入後、 http://127.0.0.1 に接続可能か確認してください  
 REST APIの一覧は todo_api.md を参照してください
 
+### Dockerfile
 
 ### 必須環境
 以下のプログラムを事前にインストールする必要があります
