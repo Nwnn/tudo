@@ -22,7 +22,7 @@
             </b-navbar-nav>
 
             <b-navbar-nav class="ml-2">
-                <b-nav-text><n-link to="login"><b>ログイン(ID変)</b></n-link></b-nav-text>
+                <b-nav-text><n-link to="login"><b>ログイン</b></n-link></b-nav-text>
             </b-navbar-nav>
             </b-collapse>
         </b-navbar>

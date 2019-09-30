@@ -62,16 +62,8 @@ export default Vue.extend({
   async asyncData(context) {
     let data = undefined;
 
-    // is Signed
-    if(context.store.state.user){
-      data = (await context.$axios('./api/tasks', {
-        params : {
-            "userId" : context.store.state.user.id
-        }
-      })).data;
-
-    }
-
+      data = (await context.$axios('./api/tasks')).data;
+          console.log(data)
 
     return {
       tasks : data

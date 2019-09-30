@@ -51,7 +51,7 @@
         data() {
             return {
                 form: {
-                    userId : this.$store.state.user.id,
+                    member : [ this.$store.state.user.name ],
                     name : '',
                     icon : '',
                     description : '',

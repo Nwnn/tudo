@@ -1,11 +1,10 @@
 <template>
   <div class="container mt-2">
-    <p>つくってよ</p> 
-
+    <h2 class="mb-3 mt-4">ユーザ登録</h2>
     <b-form @submit="onSubmit">
       <b-form-group
         id="name"
-        label="ユーザ名:"
+        label="Username:"
         label-for="input-1"
         description=""
       >
@@ -14,6 +13,20 @@
           v-model="form.username"
           required
           placeholder="Enter Username"
+        ></b-form-input>
+      </b-form-group>
+
+      <b-form-group
+        id="name"
+        label="Password:"
+        label-for="input-1"
+        description=""
+      >
+        <b-form-input
+          id="input-1"
+          v-model="form.password"
+          required
+          placeholder="Enter Password"
         ></b-form-input>
       </b-form-group>
 

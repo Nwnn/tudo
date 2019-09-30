@@ -18,9 +18,9 @@ export const mutations = {
 }
 
 export const actions = {
-    login({ commit }, { userId }) {
+    login({ commit }, { username }) {
         const authUser = {
-            id : userId
+            name : username
 
         }
 
