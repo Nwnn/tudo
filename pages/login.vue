@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    import axios from '@nuxtjs/axios'
+    import axios from 'axios'
     export default {
       data() {
         return {
@@ -57,7 +57,7 @@
                 "password" : this.form.password
 
               })
-              await this.$axios.post("./api/signin", {
+              await axios.post("./api/signin", {
                 "username" : this.form.username,
                 "password" : this.form.password
 

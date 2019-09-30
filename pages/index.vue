@@ -53,7 +53,7 @@ div.task-display {
 
 <script lang="ts">
 import Vue from 'vue';
-import axios from '@nuxtjs/axios';
+import axios from 'axios';
 import moment from 'moment';
 
 moment.locale('ja');
@@ -62,7 +62,7 @@ export default Vue.extend({
   async asyncData(context) {
     let data = undefined;
 
-      data = (await context.$axios('./api/tasks')).data;
+      data = (await axios('./api/tasks')).data;
           console.log(data)
 
     return {
@@ -76,7 +76,7 @@ export default Vue.extend({
     onTaskCheckChange(task) {
       console.log(task);
       task.isComplete = true;
-      this.$axios.$put('./api/check', {
+      axios.put('./api/check', {
         "taskId" : task.taskId
       })
 
