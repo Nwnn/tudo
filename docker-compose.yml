@@ -7,7 +7,7 @@ services:
       ports:
         - 80:80
       volumes:
-        - ${PWD}:/root/tudo
+        - ./:/root/tudo
       command: bash -c "cd /root/tudo && npm i && npm run dev"
       tty: true
 
