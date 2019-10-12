@@ -20,9 +20,9 @@ content-type: application/json
 ### ログアウト
 POST http://localhost:80/api/signout
 
-### 
+### ユーザ情報の取得
 
-
+GET http://localhost:80/api/user
 
 ### ログイン中ユーザのタスク取得
 GET http://localhost:80/api/tasks

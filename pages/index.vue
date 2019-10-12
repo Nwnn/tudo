@@ -76,8 +76,8 @@ export default Vue.extend({
     onTaskCheckChange(task) {
       console.log(task);
       task.isComplete = true;
-      axios.put('./api/check', {
-        "taskId" : task.taskId
+      axios.post(`./api/tasks/update/${ task.taskId }`, {
+        "status" : true
       })
 
       console.log(this)

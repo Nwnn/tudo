@@ -95,6 +95,17 @@ api.post('/tasks/update/:taskId', async(req, res)=> {
 
 });
 
+// ユーザ情報の取得
+api.get('/user', async(req, res) => {
+    if(req.isAuthenticated()){
+        res.status(200).send({ name : req.user });
+
+    } else {
+        res.status(401).send()
+
+    }
+})
+
 // ユーザごとのタスク取得 
 api.get('/users/:username/tasks',async(req, res)=>{
     const username: number = Number(req.params.username);

@@ -45,6 +45,7 @@
     moment.locale('ja');
 
     export default {
+      
         components: {
           VueCtkDateTimePicker
         },
@@ -63,7 +64,7 @@
         methods: {
             onSubmit(evt) {
                 evt.preventDefault()
-                this.$axios.$post( './api/task', this.form )
+                this.$axios.$post( './api/tasks/create', this.form )
                 
                 alert(JSON.stringify(this.form))
                 
