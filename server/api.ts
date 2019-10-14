@@ -23,6 +23,7 @@ api.post('/signup',async (req, res) => {
         res.send(createdUserInfo);
 
     } catch (error) {
+        // 既に存在するusernameの場合例外メッセージを添付
         res.status(400).send();
 
     }

@@ -11,6 +11,7 @@ export namespace TodoApp {
 
     export class User {
         static async createUser(params: UserCreateRequest){
+            // 既に存在するusernameの場合例外を投げる必要がある
             const user = new UserModel();
             for (const key in params) {
                 user[key] = params[key];
