@@ -26,18 +26,20 @@ nuxtConfig.dev = !(process.env.NODE_ENV === 'production');
 
     app.use(nuxt.render);
 
-    greenlockExpress.create({
-        email: EMAIL, // The email address of the ACME user / hosting provider
-        agreeTos: true, // You must accept the ToS as the host which handles the certs
-        configDir: "~/.config/acme/", // Writable directory where certs will be saved
-        communityMember: true, // Join the community to get notified of important updates
-        telemetry: true, // Contribute telemetry data to the project
+    // greenlockExpress.create({
+    //     email: EMAIL, // The email address of the ACME user / hosting provider
+    //     agreeTos: true, // You must accept the ToS as the host which handles the certs
+    //     configDir: "~/.config/acme/", // Writable directory where certs will be saved
+    //     communityMember: true, // Join the community to get notified of important updates
+    //     telemetry: true, // Contribute telemetry data to the project
  
-        // Using your express app:
-        // simply export it as-is, then include it here
-        app: app
+    //     // Using your express app:
+    //     // simply export it as-is, then include it here
+    //     app: app
  
-        //, debug: true
-    }).listen(80,443)
+    //     //, debug: true
+    // })
+    
+    app.listen(80)
 
 })();
