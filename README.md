@@ -8,10 +8,8 @@ abstract
 
 ## Demo
 
-## VS. 
-
 ## Usage
-REST APIの一覧は todo_api.md を参照してください  
+REST APIの一覧は server/test.restファイルか、 todo_api.md を参照してください  
 
 ## Install
 本プログラムの導入方法を以下に示します
@@ -66,13 +64,11 @@ $ npm run dev
 $ npm run api
 ```
 
-REST APIの一覧は todo_api.md を参照してください
+REST APIの一覧は server/test.restファイルか、 todo_api.md を参照してください  
 
 ## Contribution & Notes
 
 ### Docker & VSCodeRemote 開発向けメモ
-NodeJSが入った空の仮想環境にVSCodeRemoteで接続し、MongoDBのコンテナをネットワーク接続することで、ホストに依存しないクリーンな状態で開発することが出来ます（Dockerが必要です）
-
 NodeJSのコンテナを作成、プロジェクトのコピー
 
 ```
@@ -100,9 +96,9 @@ $ docker network connect tudo tudo
 $ docker network connect tudo tudo-mongo
 ```
 
-コンテナネットワーク内では、tudo, tudo-mongoというホストネーム（ すなわち、http://tudo:8080 のような感じ ）で他のコンテナにアクセスすることができます、素晴らしい！
+コンテナネットワーク内では、tudo, tudo-mongoというホストネーム（ すなわち、http://tudo:8080 ）で他のコンテナにアクセスすることができます
 
-このときのconf.tsの設定は以下のようになるでしょう
+このときのconf.tsの設定は以下のようになります
 
 ```
 export const MONGO_HOST = 'mongodb://tudo-mongo:27017/todoDatabase';
