@@ -9,9 +9,9 @@
       >
         <b-form-input
           id="input-1"
-          v-model="form.name"
+          v-model="form.title"
           required
-          placeholder="Enter Taskname"
+          placeholder="Enter Tasktitle"
         ></b-form-input>
       </b-form-group>
 
@@ -45,14 +45,15 @@
     moment.locale('ja');
 
     export default {
+      
         components: {
           VueCtkDateTimePicker
         },
         data() {
             return {
                 form: {
-                    userId : this.$store.state.user.id,
-                    name : '',
+                    member : [ this.$store.state.user.name ],
+                    title : '',
                     icon : '',
                     description : '',
                     dueTime : moment().format("YYYY-MM-DD HH:mm:ss")
@@ -63,7 +64,7 @@
         methods: {
             onSubmit(evt) {
                 evt.preventDefault()
-                this.$axios.$post( './api/task', this.form )
+                this.$axios.$post( './api/tasks/create', this.form )
                 
                 alert(JSON.stringify(this.form))
                 

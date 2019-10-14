@@ -1,35 +1,79 @@
-GET http://localhost:80/api/tasks
-
-###
-
-POST http://localhost:80/api/task
-content-type: application/json
-
-{
-    "name": "sample2",
-    "icon": "Wed, 21 Oct 2015 18:27:50 GMT"
-}
-
-### 
-
+### ユーザ登録
 POST http://localhost:80/api/signup
 content-type: application/json
 
 {
-    "username" : "oosawatakao5",
+    "displayName" : "aa",
+    "username" : "user115",
     "password" : "pass"
 }
 
-### 
+### ログイン
 POST http://localhost:80/api/signin
 content-type: application/json
 
 {
-    "username": "oosawatakao5",
+    "username": "user115",
     "password": "pass"
 }
 
-### 
+### ログアウト
 POST http://localhost:80/api/signout
 
-### 
+### ユーザ情報の取得
+GET http://localhost:80/api/user
+
+### ログイン中ユーザのタスク取得
+GET http://localhost:80/api/tasks
+
+### ログイン中ユーザのタスクの追加
+POST http://localhost:80/api/tasks/create
+content-type: application/json
+
+{
+  "title": "タスク",
+  "icon": "",
+  "description": "やること一覧",
+  "dueTime": "2019-09-20 21:11:00",
+  "member" : ["user115"]
+}
+
+### タスク更新（チェックの例）
+POST http://localhost:80/api/tasks/update/10
+content-type: application/json
+
+{
+    "status" : true
+}
+
+### 他人のタスク閲覧
+GET http://localhost:80/api/users/user114/tasks
+content-type: application/json
+
+
+### チーム作成
+POST http://localhost:80/api/groups/create
+content-type: application/json
+
+{
+  "groupname": "project-X",
+  "displayname": "プロジェクトX",
+  "member" : ["user115"]
+}
+
+### グループタスクの追加
+POST http://localhost:80/api/tasks/create
+content-type: application/json
+
+{
+  "title": "グループのタスク",
+  "icon": "",
+  "description": "やってね",
+  "dueTime": "2019-09-20 21:11:00",
+  "groupname": "project-X",
+  "member" : ["user115"]
+}
+
+### グループタスクの取得
+GET http://localhost:80/api/groups/tasks/project-x
+content-type: application/json

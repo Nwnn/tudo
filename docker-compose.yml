@@ -3,9 +3,13 @@ version: '2'
 services:
 
     tudo:
-      build: .
+      image: node
       ports:
-        - 8080:80
+        - 80:80
+      volumes:
+        - ./:/root/tudo
+      command: bash -c "cd /root/tudo && npm i && npm run dev"
+      tty: true
 
     tudo-mongo:
       image: mongo:latest
