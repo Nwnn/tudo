@@ -36,11 +36,14 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
       data() {
         return {
           form : {
-            userName : ""
+            username : "",
+            password : ""
           }
         }
 
@@ -48,8 +51,17 @@
       methods: {
           async onSubmit(evt) {
               evt.preventDefault()
-              const result = await this.$axios.$post( './api/signup', this.form )
-              
+              const result = await axios.post( './api/signup', this.form );
+
+              await axios.post("./api/signin", {
+                "username" : this.form.username,
+                "password" : this.form.password
+
+              });
+
+              await this.$store.dispatch('login', { username : this.form.username })
+              this.$router.push('/')
+
               console.log(result)
               
           }
