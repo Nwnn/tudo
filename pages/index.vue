@@ -71,6 +71,8 @@ import moment from 'moment';
 moment.locale('ja');
 
 export default Vue.extend({
+  middleware : 'auth',
+  
   async asyncData(context) {
     let data = undefined;
 

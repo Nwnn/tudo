@@ -26,8 +26,6 @@ const config: NuxtConfiguration = {
   ],
 
   axios: { }
-
-
   
 }
 

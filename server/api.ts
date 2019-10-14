@@ -98,7 +98,7 @@ api.post('/tasks/update/:taskId', async(req, res)=> {
 // ユーザ情報の取得
 api.get('/user', async(req, res) => {
     if(req.isAuthenticated()){
-        res.status(200).send({ name : req.user });
+        res.status(200).send({ username : req.user.username });
 
     } else {
         res.status(401).send()
