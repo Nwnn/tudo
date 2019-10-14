@@ -6,7 +6,7 @@ export default async function ({ $axios, store, redirect }) {
             const { data } = await $axios("./api/user")
             await store.dispatch('login', { username : data.username })
         } catch (error) {
-            return redirect('/login')
+
         }
 
     }

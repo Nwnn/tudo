@@ -1,10 +1,6 @@
 <template>
   <div class="container">
-
-    <b-alert v-show="!$store.state.user" show>ログインしていません</b-alert>
-    {{ $store.state.user }}
-
-    <div class="row mt-2">
+    <div class="row mt-4">
       <div class="col-md-12">
         <b-card no-body class=" mb-2" v-for="task in tasks" :key="task.id">
           <b-card-header class="text-center">
@@ -38,8 +34,8 @@
            
           </b-card-header>
           
-          <b-card-text class="m-3">
-            {{ task.description}}
+          <b-card-text class="mt-2 ml-3">
+            {{ task.description }}
           </b-card-text>
 
           <b-card-text class="small text-muted text-right m-1 mr-2">更新: {{ getRoughTime(task.updateTime) }}</b-card-text>
@@ -96,12 +92,12 @@ export default Vue.extend({
     },
 
     getFormattedDate(date) {
-      return moment(date).add("hours", -9).format("MM/DD hh:mm");
+      return moment(date).format("MM/DD hh:mm");
 
     },
 
     getRoughTime(date) {
-      return moment(date).add("hours", -9).fromNow();
+      return moment(date).fromNow();
     }
 
 

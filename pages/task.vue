@@ -63,6 +63,7 @@
         },
         methods: {
             onSubmit(evt) {
+                this.form.dueTime = moment(this.form.dueTime).add("hours", -9).format("YYYY-MM-DD HH:mm:ss");
                 evt.preventDefault()
                 this.$axios.$post( './api/tasks/create', this.form )
                 
