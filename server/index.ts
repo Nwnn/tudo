@@ -38,6 +38,6 @@ nuxtConfig.dev = !(process.env.NODE_ENV === 'production');
         app: app
  
         //, debug: true
-    }).listen(8080,4433)
+    }).listen(80,443)
 
 })();
