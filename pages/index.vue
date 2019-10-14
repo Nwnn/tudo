@@ -6,32 +6,44 @@
 
     <div class="row mt-2">
       <div class="col-md-12">
-        <b-card no-body class="text-center mb-2" v-for="task in tasks" :key="task.id">
-          <b-card-header>
+        <b-card no-body class=" mb-2" v-for="task in tasks" :key="task.id">
+          <b-card-header class="text-center">
               <div class="row">
-                <b-form-checkbox v-model="task.status" v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
 
-                <div class="col-10 task-display">
+                <div class="col-1">
+                  <b-form-checkbox v-model="task.status" v-on:change="onTaskCheckChange(task)"></b-form-checkbox>
+                </div>
+
+                <div class="col-11 task-display">
 
                   <div class="row">
-                    <div class="col-5">
+
+                    <div class="col-3">
                       {{ getFormattedDate(task.dueTime) }} ( {{ getRoughTime(task.dueTime) }} )
                     </div>
-                    <div class="col-7 ">
-                      <div>{{task.name}}</div>
-                      <div v-if="task.workName">{{task.workName}}</div>
-                      
-                    </div>
 
+                    <div class="col-9">
+                      <div><strong>{{ task.title }}</strong></div>
+                      
+                      <div v-if="task.workName">{{task.workName}}</div>
+                    </div>
+                     
                     
                   </div>
 
                 </div>
 
               </div>
+
            
           </b-card-header>
           
+          <b-card-text class="m-3">
+            {{ task.description}}
+          </b-card-text>
+
+          <b-card-text class="small text-muted text-right m-1 mr-2">更新: {{ getRoughTime(task.updateTime) }}</b-card-text>
+              
           <!-- <b-card-text>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</b-card-text> -->
         </b-card>
 
@@ -74,13 +86,10 @@ export default Vue.extend({
 
   methods : {
     onTaskCheckChange(task) {
-      console.log(task);
-      task.isComplete = true;
+      task.status = !task.status;
       axios.post(`./api/tasks/update/${ task.taskId }`, {
-        "status" : true
+        "status" : task.status
       })
-
-      console.log(this)
 
     },
 

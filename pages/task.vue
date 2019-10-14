@@ -9,9 +9,9 @@
       >
         <b-form-input
           id="input-1"
-          v-model="form.name"
+          v-model="form.title"
           required
-          placeholder="Enter Taskname"
+          placeholder="Enter Tasktitle"
         ></b-form-input>
       </b-form-group>
 
@@ -53,7 +53,7 @@
             return {
                 form: {
                     member : [ this.$store.state.user.name ],
-                    name : '',
+                    title : '',
                     icon : '',
                     description : '',
                     dueTime : moment().format("YYYY-MM-DD HH:mm:ss")
