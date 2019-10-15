@@ -35,7 +35,7 @@ export namespace TodoApp {
     }
 
     export class Tasks {
-        static async getTasksByUsername(username: string): Promise<[]> {
+        static async getTasksByUsername(username: string): Promise<any[]> {
             const _id = (await UserModel.findOne({username : username}))!._id;
             const user = (await UserModel.aggregate().lookup({
                 from: 'tasks',

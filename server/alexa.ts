@@ -1,6 +1,10 @@
 import { SkillBuilders } from "ask-sdk-core"
 import express from 'express';
 import { ExpressAdapter } from 'ask-sdk-express-adapter';
+import { TodoApp } from './todoapp'
+import moment from 'moment'
+
+moment.locale('ja')
 
 //インテントタイプ、インテント名が一致しているか確認し返却します
 function checkIntentTypeName(handlerInput, typeName, intentName) { 
@@ -37,17 +41,54 @@ const LaunchHandler = {
     }
 }
 
+// スキル起動のHandler
 const ShowTaskHandler = {
     canHandle(handlerInput) {
-        return true
+        console.log(handlerInput)
+        return checkIntentTypeName(handlerInput, 'LaunchRequest', 'ShowTaskIntent');
     },
     async handle(handlerInput) {
-        return handlerInput.responseBuilder
-            .speak('おおおおおおおおおおおおおおおおおおおお') 
+        const userTasks = await TodoApp.Tasks.getTasksByUsername("user115")
+        if(userTasks[0] != undefined){
+            // 締め切り「前です」→「過ぎています」
+            return handlerInput.responseBuilder
+                .speak(`最新の予定は${ userTasks[0].title }です。締め切りは、${ moment(userTasks[0].dueTime).fromNow() }です。`) 
+                .getResponse();
+
+        } else {
+            return handlerInput.responseBuilder
+            .speak("まだ完了していない予定はありません") 
             .getResponse();
+
+        }
+
+
     }
 }
 
+const ShowTaskByIdHandler = {
+    canHandle(handlerInput) {
+        console.log(handlerInput)
+        return checkIntentTypeName(handlerInput, 'LaunchRequest', 'ShowTaskByIdIntent');
+    },
+    async handle(handlerInput) {
+        const userTasks = await TodoApp.Tasks.getTasksByUsername("user115")
+        if(userTasks[0] != undefined){
+            // 締め切り「前です」→「過ぎています」
+            return handlerInput.responseBuilder
+                .speak(`a`) 
+                .getResponse();
+
+        } else {
+            return handlerInput.responseBuilder
+            .speak("まだ完了していない予定はありません") 
+            .getResponse();
+
+        }
+
+
+    }
+}
 
 
 // ヘルプのHandler
@@ -93,8 +134,8 @@ const ErrorHandler = {
 
 const skillBuilder = SkillBuilders.custom()
     .addRequestHandlers(
-        ShowTaskHandler,
         LaunchHandler,
+        ShowTaskHandler,
         HelpIntentHandler,
         SkillEndHandler)
     .addErrorHandlers(ErrorHandler)
