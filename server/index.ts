@@ -4,9 +4,11 @@ import nuxtConfig from '../nuxt.config';
 import { api } from './api';
 import greenlockExpress from 'greenlock-express';
 import { EMAIL } from './conf'
+import { alexaExpressAdapter } from "./alexa"
 
 const app = express();
 app.use('/api', api);
+app.post('/alexa', alexaExpressAdapter.getRequestHandlers());
 
 nuxtConfig.dev = !(process.env.NODE_ENV === 'production');
 
