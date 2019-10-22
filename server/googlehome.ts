@@ -5,7 +5,7 @@ import moment from 'moment';
 import { resolve } from "path";
 import { TaskModel } from "./db";
 import { strict } from "assert";
-
+import { Task } from './db'
 moment.locale('ja')
 
 // Create an app instance
@@ -66,11 +66,44 @@ app.intent('Show Tomorrow Task Intent', async (conv,{date}) => {
 // 個数選択
 app.intent('Num Specified Intent', async (conv,{number}) => {
     let num:number = 0;
-    if(typeof number == "string") {
+    if(typeof number === "string") {
         console.log("num",number);
         num = parseInt(number);
     }
     const userTasks = await TodoApp.Tasks.getTasksByUsername("user115");
     let ans = `${num}個前のタスクは${userTasks[userTasks.length-num].title}です。`;
+    conv.close(ans);
+});
+
+// タスクのチェック
+app.intent('TaskCheck Intent', async(conv,{task}) => {
+    let taskName:string = '';
+    if(typeof task === "string") {
+        taskName = task;
+        console.log("taskName",taskName);
+    }
+    let ans = 'そのようなタスクは存在しません';
+    const userTasks = await TodoApp.Tasks.getTasksByUsername("user115");
+    for(let userTask of userTasks) {
+        console.log(userTask.title);
+        if(userTask.title === taskName) {
+            console.log(userTask.taskId)
+            const updateTask:Task = {
+                title : userTask.title,
+                startTime : userTask.startTime,
+                dueTime : userTask.dueTime,
+                icon : userTask.icon,
+                description : userTask.description,
+                status : true,
+                createTime : userTask.createTime,
+                updateTime : userTask.updateTask,
+                author : userTask.author,
+                member : userTask.member
+                }
+            await TodoApp.Tasks.updateTask(userTask.taskId,updateTask)
+            ans = `${userTask.title}をチェックします`
+        }
+    }
+    console.log(ans)
     conv.close(ans);
 });
