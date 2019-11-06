@@ -1,4 +1,4 @@
-import { SkillBuilders } from "ask-sdk-core"
+import { SkillBuilders, HandlerInput } from "ask-sdk-core"
 import express from 'express';
 import { ExpressAdapter } from 'ask-sdk-express-adapter';
 import { TodoApp } from './todoapp'
@@ -8,6 +8,7 @@ moment.locale('ja')
 
 //インテントタイプ、インテント名が一致しているか確認し返却します
 function checkIntentTypeName(handlerInput, typeName, intentName) { 
+    console.log(handlerInput.requestEnvelope.request)
     let request = handlerInput.requestEnvelope.request;
     let isMatch = false;
     //インテントタイプのチェックを行う
@@ -34,11 +35,20 @@ const LaunchHandler = {
         console.log(handlerInput)
         return checkIntentTypeName(handlerInput, 'LaunchRequest', '');
     },
-    async handle(handlerInput) {
+    async handle(handlerInput : HandlerInput) {
         return handlerInput.responseBuilder
-            .speak('ハローワールド') 
-            .getResponse();
+        .addDirective({
+            type: 'Dialog.Delegate',
+            updatedIntent: {
+              name: 'ShowTaskIntent',
+              confirmationStatus: 'NONE',
+              slots: {}
+            }
+        })
+        .getResponse();
+
     }
+
 }
 
 // スキル起動のHandler
@@ -47,12 +57,14 @@ const ShowTaskHandler = {
         console.log(handlerInput)
         return checkIntentTypeName(handlerInput, 'LaunchRequest', 'ShowTaskIntent');
     },
-    async handle(handlerInput) {
+    async handle(handlerInput: HandlerInput) {
         const userTasks = await TodoApp.Tasks.getTasksByUsername("user115")
-        if(userTasks[0] != undefined){
+        const latestTask = userTasks[userTasks.length - 1];
+
+        if(latestTask != undefined){
             // 締め切り「前です」→「過ぎています」
             return handlerInput.responseBuilder
-                .speak(`最新の予定は${ userTasks[0].title }です。締め切りは、${ moment(userTasks[0].dueTime).fromNow() }です。`) 
+                .speak(`最新の予定は「${ latestTask.title }」です。締め切りは、${ moment(latestTask.dueTime).fromNow() }です。`)
                 .getResponse();
 
         } else {
@@ -86,6 +98,19 @@ const ShowTaskByIdHandler = {
 
         }
 
+
+    }
+}
+
+const ShowDescriptionHandler = {
+    canHandle(handlerInput) {
+        console.log(handlerInput)
+        return checkIntentTypeName(handlerInput, 'IntentRequest', 'ShowDescriptionIntent');
+    },
+    async handle(handlerInput) {
+        return handlerInput.responseBuilder
+        .speak("unhandle") 
+        .getResponse();
 
     }
 }
@@ -136,6 +161,7 @@ const skillBuilder = SkillBuilders.custom()
     .addRequestHandlers(
         LaunchHandler,
         ShowTaskHandler,
+        ShowDescriptionHandler,
         HelpIntentHandler,
         SkillEndHandler)
     .addErrorHandlers(ErrorHandler)
