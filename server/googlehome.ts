@@ -5,49 +5,59 @@ import moment from 'moment';
 import { resolve } from "path";
 import { TaskModel } from "./db";
 import { strict } from "assert";
-import { Task } from './db'
+import { Task } from './db';
+import { Events, data,speakText } from './middlewear'
+import { json } from "body-parser";
+
 moment.locale('ja')
 
 // Create an app instance
 export const app = dialogflow()
-  
+
+
 // 最新のタスク
 app.intent('Show Task Intent', async (conv) => {
-    const userTasks = await TodoApp.Tasks.getTasksByUsername("user115")
-    if(userTasks[0] != undefined){ 
-        conv.close(`最新の予定は${ userTasks[0].title }です。締め切りは、${ moment(userTasks[0].dueTime).fromNow() }です。`)
-
-    } else {
-        conv.close('予定はありません')
-
-    }
-
+    const data:data ={
+        name : conv.intent,
+        param : {
+            value : ""
+        }
+    };return Events.intent(data).then(text => {
+        const message:speakText = text;
+        conv.close(message.speakText)
+    });
 });
 
-// app.intent('Show Tomorrow Task Intent', (conv,{date}) => {
-//     const dueDate = moment(date).date();
-//     console.log("入力された今日",dueDate)
-//     return new Promise((resolve) => {
-//         TodoApp.Tasks.getTasksByUsername("user115")
-//         .then(userTasks => {
-//             for (let i = 0; i < userTasks.length; i++) {
-//                 if(moment(userTasks[i].dueDate).date() === dueDate) {
-//                     console.log(`あった${userTasks[i].title}`)
-//                     conv.close(`本日の予定は${userTasks[i].title}`)
+// app.intent('Show Task Intent', async (conv) => {
+//     const userTasks = await TodoApp.Tasks.getTasksByUsername("user115")
+//     console.log(userTasks[userTasks.length - 1])
+//     if(userTasks[userTasks.length  - 1] != undefined){ 
+//         conv.close(`最新の予定は${ userTasks[userTasks.length - 1].title }です。締め切りは、${ moment(userTasks[userTasks.length - 1].dueTime).fromNow() }です。`)
 
-//                 } else {
-//                     console.log(`無かった`)
-//                     conv.close('本日の予定はありません')
-//                 }
-//             }
-//         });
-//     });
+//     } else {
+//         conv.close('予定はありません')
+
+//     }
+
 // });
 
+// 翌日のタスク
+// app.intent('Show Tomorrow Task Intent', async (conv,{date}) => {
+//     const dueDate = moment(date).date();
+//     const data = {
+//         "intent" : conv.intent,
+//         "param" : {
+//             "value" : dueDate
+//         }
+//     };
+//     const text = Middle.
+
+// });
 // 翌日のタスク
 app.intent('Show Tomorrow Task Intent', async (conv,{date}) => {
     const dueDate = moment(date).date();
     console.log("入力された明日",dueDate)
+    console.log("\n===================\nインテント",conv.intent,"\nparams",conv.parameters,"\n==================\n")
     const userTasks = await TodoApp.Tasks.getTasksByUsername("user115");
     let ans = "";
     userTasks.forEach(userTask => {
@@ -65,6 +75,7 @@ app.intent('Show Tomorrow Task Intent', async (conv,{date}) => {
 });
 // 個数選択
 app.intent('Num Specified Intent', async (conv,{number}) => {
+    console.log("\n===================\nインテント",conv.intent,"\nparams",conv.parameters,"\n===================\n")
     let num:number = 0;
     if(typeof number === "string") {
         console.log("num",number);
@@ -77,6 +88,7 @@ app.intent('Num Specified Intent', async (conv,{number}) => {
 
 // タスクのチェック
 app.intent('TaskCheck Intent', async(conv,{task}) => {
+    console.log("\n===================\nインテント",conv.intent,"\nparams",conv.parameters,"\n==================\n")
     let taskName:string = '';
     if(typeof task === "string") {
         taskName = task;
@@ -107,3 +119,9 @@ app.intent('TaskCheck Intent', async(conv,{task}) => {
     console.log(ans)
     conv.close(ans);
 });
+
+// タスクの追加
+app.intent('Add Task Intent',(conv) => {
+    conv.ask('タスクの名前は何ですか？');
+
+})
