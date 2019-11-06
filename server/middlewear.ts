@@ -8,7 +8,7 @@ export interface speakText {
 export interface data {
     name : string,
     param : {
-        value : string | number
+        value : string | number | Date | undefined
     }
 }
 
@@ -53,9 +53,10 @@ async function numSpecifiedIntent(number:number):Promise<speakText> {
 }
 
 async function taskCheckIntent(task:string):Promise<speakText> {
+    console.log(task)
     const taskName = task;
     let message:speakText = {
-        speakText : ""
+        speakText : "そのようなタスクはありません"
     }
     const userTasks = await TodoApp.Tasks.getTasksByUsername("user115");
     for(let userTask of userTasks) {
@@ -74,8 +75,6 @@ async function taskCheckIntent(task:string):Promise<speakText> {
             }
             await TodoApp.Tasks.updateTask(userTask.taskId,updateTask)
             message.speakText = `${userTask.title}をチェックします。`
-        } else {
-            message.speakText = 'そのようなタスクは存在しません。'
         }
     }return message
 }
@@ -83,9 +82,9 @@ async function taskCheckIntent(task:string):Promise<speakText> {
 // const intents = new Map([["Show Task Intent", showTaskIntent],["Show Tomorror Task Intent",showTomorrowTaskIntent],["Num Specified Intent", numSpecifiedIntent],["Task Check Intent",taskCheckIntent]]);
 const intents = new Map()
 intents.set("Show Task Intent",showTaskIntent)
-intents.set("Show Tomorror Task Intent",showTomorrowTaskIntent)
+intents.set("Show Tomorrow Task Intent",showTomorrowTaskIntent)
 intents.set("Num Specified Intent",numSpecifiedIntent)
-intents.set("Task Check Intent",taskCheckIntent)
+intents.set("TaskCheck Intent",taskCheckIntent)
 
 const func = intents.get("Show Task Intent")
 
