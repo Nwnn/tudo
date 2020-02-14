@@ -3,16 +3,32 @@ import bodyParser from 'body-parser';
 import { Nuxt, Builder } from 'nuxt';
 import nuxtConfig from '../nuxt.config';
 import { api } from './api';
+
 import { app as dialogFlowApp } from './googlehome';
+import { alexaExpressAdapter } from "./alexa"
 
 const app = express();
 
-// restapi Host
+
+
+/*
+    Application defined speaktext api
+*/
 app.use('/api', api);
+
+
+/*
+    Middleware Gateways
+*/
+// Alexa Host
+app.post('/alexa', alexaExpressAdapter.getRequestHandlers());
 
 // googleHome Host
 app.use(bodyParser.json());
 app.post('/fulfillment', dialogFlowApp);
+
+
+
 
 nuxtConfig.dev = !(process.env.NODE_ENV === 'production');
 

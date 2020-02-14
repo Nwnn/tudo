@@ -100,7 +100,7 @@ Content-Type: application/json
 {
   "name" : "Num Specified Intent",
   "param" : {
-    "value" : 3
+    "value" : 1
   }
 }
 
