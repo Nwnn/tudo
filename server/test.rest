@@ -77,3 +77,52 @@ content-type: application/json
 ### グループタスクの取得
 GET http://localhost:80/api/groups/tasks/project-x
 content-type: application/json
+
+
+
+
+
+### Show Task Intent
+POST http://localhost:80/api/fullfillment/ShowTaskIntent
+content-type : application/json
+
+{
+  "name" : "Show Task Intent",
+  "param" : {
+    "value" : ""
+  }
+}
+
+###Num Specified Intent
+POST http://localhost:80/api/fullfillment/NumSpecifiedIntent
+Content-Type: application/json
+
+{
+  "name" : "Num Specified Intent",
+  "param" : {
+    "value" : 3
+  }
+}
+
+### Show Tomorrow Task Intent
+POST http://localhost:80/api/fullfillment/ShowTomorrowTaskIntent
+Content-Type: application/json
+
+{
+  "name" : "Show Tomorrow Task Intent",
+  "param" : {
+    "value" : "2019-12-14T12:00:00+09:00"
+  }
+}
+
+### TaskCheck Intent
+POST http://localhost:80/api/fullfillment/TaskCheckIntent
+Content-Type: application/json
+
+{
+  "name" : "TaskCheck Intent",
+  "param" : {
+    "value" : "おでかけ"
+  }
+}
+

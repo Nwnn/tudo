@@ -1,8 +1,11 @@
 import express, { Request } from 'express';
-import bodyParser from 'body-parser';
+import bodyParser, { json } from 'body-parser';
 import session from 'express-session';
 import passport from './authorize';
-import { TodoApp } from './todoapp'
+import { TodoApp } from './todoapp';
+import { data, Events, speakText } from './middlewear';
+
+
 
 export const api = express.Router();
 api.use(bodyParser.json());
@@ -123,3 +126,58 @@ api.get('/users/:username/tasks',async(req, res)=>{
 });
 
 
+// intent用のエンドポイント
+// Welcome Intent
+api.post('/fullfillment/DefaultWelcomeIntent',(req,res) => {
+    const message:speakText = {
+        speakText : "こんにちは"
+    }
+    res.json(message);
+});
+// 最新のタスク
+api.post('/fullfillment/ShowTaskIntent', async(req, res) =>{
+    // console.log(req.body);
+    // console.log(req.body.name);
+    const data:data = req.body;
+    await Events.intent(data).then(text => {
+        const message:speakText = text;
+        // console.log(message);
+        res.json(message);
+    });
+});
+
+// 翌日締め切りのタスク
+api.post('/fullfillment/ShowTomorrowTaskIntent',async(req, res) => {
+    console.log(req.body);
+    console.log(req.body.name);
+    const data:data = req.body;
+    await Events.intent(data).then(text => {
+        const message:speakText = text;
+        console.log(message);
+        res.json(message);
+    })
+})
+
+// 個数選択でタスクの確認
+api.post('/fullfillment/NumSpecifiedIntent', async(req, res) =>{
+    console.log(req.body);
+    console.log(req.body.name);
+    const data:data = req.body;
+    await Events.intent(data).then(text => {
+        const message:speakText = text;
+        console.log(message);
+        res.json(message)
+    });
+});
+
+// タスクのチェック
+api.post('/fullfillment/TaskCheckIntent',async(req, res) =>{
+    console.log(req.body);
+    console.log(req.body.name);
+    const data:data = req.body;
+    await Events.intent(data).then(text => {
+        const message:speakText = text
+        console.log(message);
+        res.json(message);
+    });
+});

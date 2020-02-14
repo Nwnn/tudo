@@ -62,8 +62,8 @@ export namespace TodoApp {
             await task.save();
 
         }
-
-        static async updateTask(taskId: number, params: Task) {
+        // paramsをanyに
+        static async updateTask(taskId: number, params: any) {
             const task = await TaskModel.findOne({ taskId: taskId });
             if(task !== null){
                 for (const key in params) {

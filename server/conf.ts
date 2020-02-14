@@ -1,1 +1,1 @@
-export const MONGO_HOST = 'mongodb://localhost:50033/todoDatabase';
+export const MONGO_HOST = 'mongodb://localhost:51422/todoDatabase';
