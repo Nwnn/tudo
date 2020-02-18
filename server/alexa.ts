@@ -63,9 +63,19 @@ for (const intent of intentList) {
         },
         async handle(handlerInput) {
             console.log(handlerInput.requestEnvelope.request.intent.slots)
-            const slots: any = Object.entries(handlerInput.requestEnvelope.request.intent.slots)
-            console.log(slots[0][1].value)
-            const slotvalue = slots[0][1].value;
+            let slots: any = undefined;
+            if(handlerInput.requestEnvelope.request.intent.slots){
+                slots = Object.entries(handlerInput.requestEnvelope.request.intent.slots);
+
+            }
+            
+            console.log(slots);
+
+            let slotvalue = undefined;
+            if (slots !== undefined) {
+                slotvalue = slots[0][1].value
+            }
+            
             const response = await new Promise(async (resolve, reject) => {
 
                 // ここから取得処理
@@ -75,6 +85,8 @@ for (const intent of intentList) {
                         value : slotvalue
                     }
                 };
+
+                console.log(data)
 
                 const options = {
                     url : url+intent["intentUrl"],
